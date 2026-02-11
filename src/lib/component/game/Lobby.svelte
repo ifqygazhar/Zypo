@@ -61,7 +61,7 @@
 	<!-- VS SECTION -->
 	<div class="flex items-center justify-center gap-8 mb-12">
 		<!-- PLAYER 1 (HOST/ME) -->
-		{#each game.players as p}
+		{#each game.players as p, i}
 			{@const char = CHARACTERS.find((c) => c.id === p.characterId)}
 			<div class="relative w-64 h-80 perspective-1000 group">
 				<div
@@ -109,13 +109,14 @@
 					</div>
 				{/if}
 			</div>
+			<!-- VS BADGE (Inserted between players) -->
+			{#if i === 0 && game.players.length >= 2}
+				<div class="text-6xl font-black text-red-600 italic animate-pulse px-4">VS</div>
+			{/if}
 		{/each}
 
-		<!-- VS BADGE (Only if 2 players) -->
-		{#if game.players.length >= 2}
-			<div class="text-6xl font-black text-red-600 italic animate-pulse px-4">VS</div>
-		{:else}
-			<!-- EMPTY SLOT -->
+		<!-- EMPTY SLOT (Only if < 2 players) -->
+		{#if game.players.length < 2}
 			<div
 				class="w-64 h-80 relative rounded-xl border-2 border-dashed border-neutral-700 bg-black/20 flex flex-col items-center justify-center text-neutral-600 gap-4"
 			>
