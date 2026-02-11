@@ -6,6 +6,7 @@
 	import CreateGameForm from '$lib/component/landing/CreateGameForm.svelte';
 	import JoinGameForm from '$lib/component/landing/JoinGameForm.svelte';
 	import Leaderboard from '$lib/component/landing/Leaderboard.svelte';
+	import formatError from '$lib/utils/error_format';
 
 	let playerName = $state('');
 	let playerPin = $state('');
@@ -35,7 +36,8 @@
 			}
 		} catch (e: any) {
 			console.error('Connection failed:', e);
-			if (e.message.includes('WRONG_PIN')) {
+			const msg = formatError(e);
+			if (msg.includes('WRONG_PIN')) {
 				throw new Error('Invalid PIN for this username!');
 			}
 			throw new Error('Failed to connect to server');
@@ -63,7 +65,7 @@
 			});
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (err: any) {
-			error = 'Failed to create game: ' + err.message;
+			error = formatError(err);
 		} finally {
 			isCreating = false;
 		}
@@ -91,7 +93,7 @@
 			});
 			goto(`/game/${joinCode.toUpperCase()}?pid=${playerId}`);
 		} catch (err: any) {
-			error = err.message;
+			error = formatError(err);
 		} finally {
 			isJoining = false;
 		}
@@ -121,7 +123,7 @@
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (e: any) {
 			console.error(e);
-			error = 'Quick Match failed: ' + e.message;
+			error = formatError(e);
 			isCreating = false;
 		}
 	}

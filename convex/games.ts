@@ -244,7 +244,6 @@ export const quickMatch = mutation({
 
 		let chosenGame = null;
 
-		// Helper untuk cek apakah game valid (belum penuh & user belum ada di sana)
 		const isValidGame = (g: any) => {
 			return g.players.length < 2 && !g.players.some((p: any) => p.name === args.playerName);
 		};
