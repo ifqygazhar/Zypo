@@ -4,6 +4,7 @@ import { v } from 'convex/values';
 export default defineSchema({
 	games: defineTable({
 		code: v.string(),
+		mapId: v.optional(v.string()),
 		status: v.string(), // "waiting", "playing", "finished"
 		players: v.array(
 			v.object({

@@ -13,11 +13,12 @@ const QUESTIONS = [
 ];
 
 export const createGame = mutation({
-	args: { playerName: v.string(), playerId: v.string() },
+	args: { playerName: v.string(), playerId: v.string(), mapId: v.optional(v.string()) },
 	handler: async (ctx, args) => {
 		const code = Math.random().toString(36).substring(2, 7).toUpperCase();
 		const gameId = await ctx.db.insert('games', {
 			code,
+			mapId: args.mapId,
 			status: 'waiting',
 			players: [
 				{

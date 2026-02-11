@@ -8,6 +8,16 @@
 	let isCreating = $state(false);
 	let isJoining = $state(false);
 	let error = $state('');
+	let selectedMap = $state('origbig-1.png');
+
+	const MAPS = [
+		'origbig-1.png',
+		'origbig-2.png',
+		'origbig-3.png',
+		'origbig-4.png',
+		'origbig-5.png',
+		'origbig-6.png'
+	];
 
 	async function handleCreate() {
 		if (!playerName.trim()) {
@@ -25,7 +35,8 @@
 
 			const result = await convex.mutation(api.games.createGame, {
 				playerName,
-				playerId
+				playerId,
+				mapId: selectedMap
 			});
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (err: any) {
@@ -98,6 +109,28 @@
 				</div>
 				<div class="relative flex justify-center text-xs uppercase">
 					<span class="bg-neutral-800 px-2 text-neutral-500">Start Playing</span>
+				</div>
+			</div>
+
+			<div class="space-y-2" role="group" aria-labelledby="map-selection-label">
+				<div id="map-selection-label" class="block text-xs font-bold uppercase text-neutral-500">
+					Select Battleground
+				</div>
+				<div class="grid grid-cols-3 gap-2">
+					{#each MAPS as map}
+						<button
+							class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all {selectedMap ===
+							map
+								? 'border-orange-500 scale-105'
+								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}"
+							onclick={() => (selectedMap = map)}
+						>
+							<img src={`/map/${map}`} alt={map} class="w-full h-full object-cover" />
+							{#if selectedMap === map}
+								<div class="absolute inset-0 bg-orange-500/20"></div>
+							{/if}
+						</button>
+					{/each}
 				</div>
 			</div>
 
