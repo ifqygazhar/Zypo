@@ -184,3 +184,62 @@ export const submitAnswer = mutation({
 		}
 	}
 });
+
+export const quickMatch = mutation({
+	args: {
+		playerName: v.string(),
+		playerId: v.string(),
+		characterId: v.string(),
+		mapId: v.optional(v.string())
+	},
+	handler: async (ctx, args) => {
+		// 1. Try to find a waiting game with space
+		const waitingGames = await ctx.db
+			.query('games')
+			.withIndex('by_status', (q) => q.eq('status', 'waiting'))
+			.take(10); // Take a few to check player count
+
+		const availableGame = waitingGames.find((g) => g.players.length < 2);
+
+		if (availableGame) {
+			// Join existing game
+			// Check if player already joined (idempotency)
+			if (availableGame.players.some((p) => p.id === args.playerId)) {
+				return { gameId: availableGame._id, code: availableGame.code, status: 'joined' };
+			}
+
+			await ctx.db.patch(availableGame._id, {
+				players: [
+					...availableGame.players,
+					{
+						id: args.playerId,
+						name: args.playerName,
+						characterId: args.characterId,
+						score: 0,
+						hp: 100
+					}
+				]
+			});
+
+			return { gameId: availableGame._id, code: availableGame.code, status: 'joined' };
+		} else {
+			// No game found, create new one
+			const code = Math.random().toString(36).substring(2, 7).toUpperCase();
+			const gameId = await ctx.db.insert('games', {
+				code,
+				mapId: args.mapId || 'metropolis_1.webp', // Default map if not provided
+				status: 'waiting',
+				players: [
+					{
+						id: args.playerId,
+						name: args.playerName,
+						characterId: args.characterId,
+						score: 0,
+						hp: 100
+					}
+				]
+			});
+			return { gameId, code, status: 'created' };
+		}
+	}
+});

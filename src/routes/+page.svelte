@@ -67,6 +67,33 @@
 			isJoining = false;
 		}
 	}
+	async function handleQuickMatch() {
+		if (!playerName.trim()) {
+			error = 'Enter your name first!';
+			return;
+		}
+		isCreating = true;
+		error = '';
+
+		try {
+			const playerId = crypto.randomUUID();
+			sessionStorage.setItem('zypo_playerId', playerId);
+			sessionStorage.setItem('zypo_playerName', playerName);
+
+			const result = await convex.mutation(api.games.quickMatch, {
+				playerName,
+				playerId,
+				characterId: selectedCharacter,
+				mapId: selectedMap
+			});
+
+			goto(`/game/${result.code}?pid=${playerId}`);
+		} catch (e: any) {
+			console.error(e);
+			error = 'Quick Match failed: ' + e.message;
+			isCreating = false;
+		}
+	}
 </script>
 
 <div class="min-h-screen bg-neutral-900 text-white flex flex-col items-center justify-center p-4">
@@ -92,6 +119,7 @@
 			bind:selectedMap
 			{isCreating}
 			onCreate={handleCreate}
+			onQuickMatch={handleQuickMatch}
 		>
 			{#snippet joinSection()}
 				<JoinGameForm bind:joinCode {isJoining} onJoin={handleJoin} />

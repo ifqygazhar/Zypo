@@ -24,5 +24,7 @@ export default defineSchema({
 			})
 		),
 		winner: v.optional(v.string()) // Player ID of the winner
-	}).index('by_code', ['code'])
+	})
+		.index('by_code', ['code'])
+		.index('by_status', ['status'])
 });

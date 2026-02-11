@@ -8,6 +8,7 @@
 		selectedMap: string;
 		isCreating: boolean;
 		onCreate: () => void;
+		onQuickMatch: () => void;
 		joinSection: Snippet;
 	}
 
@@ -17,6 +18,7 @@
 		selectedMap = $bindable(),
 		isCreating,
 		onCreate,
+		onQuickMatch,
 		joinSection
 	}: Props = $props();
 </script>
@@ -48,7 +50,25 @@
 				<div class="w-full border-t border-neutral-700"></div>
 			</div>
 			<div class="relative flex justify-center text-xs uppercase">
-				<span class="bg-neutral-800 px-2 text-neutral-500">OR Create New</span>
+				<span class="bg-neutral-800 px-2 text-neutral-500">OR</span>
+			</div>
+		</div>
+
+		<button
+			onclick={onQuickMatch}
+			disabled={isCreating}
+			class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-lg transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 group"
+		>
+			<span>SEARCH OPPONENT</span>
+			<span class="group-hover:translate-x-1 transition-transform">→</span>
+		</button>
+
+		<div class="relative py-2">
+			<div class="absolute inset-0 flex items-center">
+				<div class="w-full border-t border-neutral-700"></div>
+			</div>
+			<div class="relative flex justify-center text-xs uppercase">
+				<span class="bg-neutral-800 px-2 text-neutral-500">Custom Game</span>
 			</div>
 		</div>
 
