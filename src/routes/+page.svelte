@@ -70,13 +70,13 @@
 </script>
 
 <div class="min-h-screen bg-neutral-900 text-white flex flex-col items-center justify-center p-4">
-	<div class="max-w-md w-full bg-neutral-800 p-8 rounded-2xl shadow-2xl border border-neutral-700">
+	<div class="max-w-5xl w-full bg-neutral-800 p-8 rounded-2xl shadow-2xl border border-neutral-700">
 		<h1
 			class="text-4xl font-black text-center mb-2 bg-linear-to-r from-orange-400 to-red-500 bg-clip-text text-transparent"
 		>
-			BRAIN DUEL
+			Zypo
 		</h1>
-		<p class="text-neutral-400 text-center mb-8">Speed Math & Trivia Battles</p>
+		<p class="text-neutral-400 text-center mb-8">Think Fast. Strike Hard.</p>
 
 		{#if error}
 			<div
@@ -92,8 +92,10 @@
 			bind:selectedMap
 			{isCreating}
 			onCreate={handleCreate}
-		/>
-
-		<JoinGameForm bind:joinCode {isJoining} onJoin={handleJoin} />
+		>
+			{#snippet joinSection()}
+				<JoinGameForm bind:joinCode {isJoining} onJoin={handleJoin} />
+			{/snippet}
+		</CreateGameForm>
 	</div>
 </div>

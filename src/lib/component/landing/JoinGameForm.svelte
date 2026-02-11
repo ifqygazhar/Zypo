@@ -8,7 +8,7 @@
 	let { joinCode = $bindable(), isJoining, onJoin }: Props = $props();
 </script>
 
-<div class="grid grid-cols-3 gap-2 mt-4">
+<div class="grid grid-cols-3 gap-2">
 	<input
 		type="text"
 		bind:value={joinCode}
