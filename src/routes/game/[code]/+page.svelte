@@ -75,18 +75,7 @@
 </script>
 
 <div class="min-h-screen bg-black text-white font-mono relative overflow-hidden">
-	{#if game?.mapId}
-		<div class="absolute inset-0 z-0">
-			<img
-				src={`/map/${game.mapId}`}
-				alt="Battleground"
-				class="w-full h-full object-cover opacity-50"
-			/>
-			<div class="absolute inset-0 bg-black/60"></div>
-		</div>
-	{/if}
-
-	<div class="relative z-10 p-4 min-h-screen flex flex-col">
+	<div class="relative z-10 min-h-screen flex flex-col">
 		{#if gameQuery.isLoading}
 			<div class="flex h-screen items-center justify-center">
 				<div class="text-orange-500 animate-pulse text-xl">CONNECTING TO NEURAL LINK...</div>
@@ -99,7 +88,7 @@
 		{:else}
 			<!-- LOBBY STATE -->
 			{#if game.status === 'waiting'}
-				<div class="max-w-md mx-auto mt-20 text-center">
+				<div class="max-w-md mx-auto mt-20 text-center p-4">
 					<h2 class="text-6xl font-black text-white mb-2">{game.code}</h2>
 					<p class="text-neutral-500 mb-12 uppercase tracking-widest">Access Code</p>
 
@@ -139,13 +128,24 @@
 				<!-- PLAYING STATE -->
 				<!-- PLAYING STATE (BATTLE UI) -->
 			{:else if game.status === 'playing'}
-				<div class="relative w-full h-full max-w-5xl mx-auto flex flex-col perspective-1000">
+				<div class="relative w-full h-full flex flex-col perspective-1000">
 					<!-- BATTLE VIEW -->
-					<div class="flex-1 relative min-h-[400px] overflow-hidden rounded-b-xl">
+					<div class="flex-1 relative min-h-[400px] overflow-hidden group">
+						<!-- BATTLEGROUND BACKGROUND -->
+						{#if game?.mapId}
+							<div class="absolute inset-0 z-0 select-none pointer-events-none">
+								<img
+									src={`/map/${game.mapId}`}
+									alt="Battleground"
+									class="w-full h-full object-cover object-bottom opacity-80"
+								/>
+								<div class="absolute inset-0 bg-linear-to-t from-black/50 to-transparent"></div>
+							</div>
+						{/if}
 						<!-- OPPONENT (Top Right) -->
 						{#if opponent}
 							<div
-								class="absolute top-[15%] right-[10%] flex flex-col items-center z-10 transition-all duration-500"
+								class="absolute bottom-[20%] right-[10%] flex flex-col items-center z-10 transition-all duration-500 scale-75 origin-bottom"
 							>
 								<!-- HUD -->
 								<div
@@ -181,7 +181,7 @@
 											<img
 												src={`/character/${opponentChar.assets.front}`}
 												alt={opponent.name}
-												class="w-full h-full object-contain drop-shadow-2xl"
+												class="w-full h-full object-contain object-bottom drop-shadow-2xl"
 											/>
 										{:else}
 											<div class="w-full h-full bg-red-500/20 rounded-full blur-xl"></div>
@@ -194,7 +194,7 @@
 						<!-- PLAYER (Bottom Left) -->
 						{#if currentPlayer}
 							<div
-								class="absolute bottom-[20px] left-[10%] flex flex-col items-center z-20 transition-all duration-500"
+								class="absolute bottom-[5%] left-[5%] flex flex-col items-center z-20 transition-all duration-500"
 							>
 								<!-- CHARACTER CONTAINER -->
 								<div class="relative mb-6 group">
@@ -212,7 +212,7 @@
 											<img
 												src={`/character/${playerChar.assets.back}`}
 												alt={currentPlayer.name}
-												class="w-full h-full object-contain drop-shadow-2xl"
+												class="w-full h-full object-contain object-bottom drop-shadow-2xl"
 											/>
 										{:else}
 											<div class="w-full h-full bg-blue-500/20 rounded-full blur-xl"></div>
@@ -305,7 +305,7 @@
 
 				<!-- FINISHED STATE -->
 			{:else if game.status === 'finished'}
-				<div class="flex flex-col items-center justify-center h-screen text-center">
+				<div class="flex flex-col items-center justify-center h-screen text-center p-4">
 					<h1
 						class="text-6xl font-black mb-4 {game.winner === playerId
 							? 'text-green-500'
@@ -322,35 +322,5 @@
 				</div>
 			{/if}
 		{/if}
-
-		<!-- DEBUG FOOTER -->
-		<div
-			class="fixed bottom-0 left-0 w-full p-2 bg-neutral-900/80 text-[10px] text-neutral-500 flex justify-between items-center pointer-events-none"
-		>
-			<span>ID: {playerId}</span>
-			<div class="space-x-2">
-				<!-- DEBUG DATA -->
-				<span class="opacity-50 text-[8px]"
-					>{JSON.stringify(
-						game?.players.map((p) => ({ n: p.name, hp: p.hp, id: p.id.slice(0, 4) + '...' }))
-					)}</span
-				>
-				<span class="text-orange-500 text-[9px]"
-					>ME: {currentPlayer?.name} ({currentPlayer?.hp}) ID: {currentPlayer?.id.slice(
-						0,
-						4
-					)}...</span
-				>
-				<span class="text-blue-500 text-[9px]">OP: {opponent?.name} ({opponent?.hp})</span>
-				<button
-					class="pointer-events-auto hover:text-white"
-					onclick={() => {
-						sessionStorage.clear();
-						window.location.href = '/';
-					}}>RESET SESSION</button
-				>
-			</div>
-		</div>
 	</div>
 </div>
-```
