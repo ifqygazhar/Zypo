@@ -13,7 +13,12 @@ const QUESTIONS = [
 ];
 
 export const createGame = mutation({
-	args: { playerName: v.string(), playerId: v.string(), mapId: v.optional(v.string()) },
+	args: {
+		playerName: v.string(),
+		playerId: v.string(),
+		mapId: v.optional(v.string()),
+		characterId: v.string()
+	},
 	handler: async (ctx, args) => {
 		const code = Math.random().toString(36).substring(2, 7).toUpperCase();
 		const gameId = await ctx.db.insert('games', {
@@ -24,6 +29,7 @@ export const createGame = mutation({
 				{
 					id: args.playerId,
 					name: args.playerName,
+					characterId: args.characterId,
 					score: 0,
 					hp: 100
 				}
@@ -34,7 +40,12 @@ export const createGame = mutation({
 });
 
 export const joinGame = mutation({
-	args: { code: v.string(), playerName: v.string(), playerId: v.string() },
+	args: {
+		code: v.string(),
+		playerName: v.string(),
+		playerId: v.string(),
+		characterId: v.string()
+	},
 	handler: async (ctx, args) => {
 		const game = await ctx.db
 			.query('games')
@@ -56,6 +67,7 @@ export const joinGame = mutation({
 				{
 					id: args.playerId,
 					name: args.playerName,
+					characterId: args.characterId,
 					score: 0,
 					hp: 100
 				}

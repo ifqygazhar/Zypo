@@ -10,6 +10,7 @@ export default defineSchema({
 			v.object({
 				id: v.string(), // Client-side generated ID or Convex User ID (using random string for no-auth simplicity)
 				name: v.string(),
+				characterId: v.optional(v.string()),
 				score: v.number(),
 				hp: v.number()
 			})

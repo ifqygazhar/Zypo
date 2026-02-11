@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { CHARACTERS, MAPS } from '$lib/gameConfig';
 	import { convex } from '$lib/convex.svelte';
 	import { api } from '../../convex/_generated/api';
 	import { goto } from '$app/navigation';
@@ -8,16 +9,8 @@
 	let isCreating = $state(false);
 	let isJoining = $state(false);
 	let error = $state('');
-	let selectedMap = $state('origbig-1.png');
-
-	const MAPS = [
-		'origbig-1.png',
-		'origbig-2.png',
-		'origbig-3.png',
-		'origbig-4.png',
-		'origbig-5.png',
-		'origbig-6.png'
-	];
+	let selectedMap = $state(MAPS[0]);
+	let selectedCharacter = $state(CHARACTERS[0].id);
 
 	async function handleCreate() {
 		if (!playerName.trim()) {
@@ -36,7 +29,8 @@
 			const result = await convex.mutation(api.games.createGame, {
 				playerName,
 				playerId,
-				mapId: selectedMap
+				mapId: selectedMap,
+				characterId: selectedCharacter
 			});
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (err: any) {
@@ -61,7 +55,8 @@
 			await convex.mutation(api.games.joinGame, {
 				code: joinCode.toUpperCase(),
 				playerName,
-				playerId
+				playerId,
+				characterId: selectedCharacter
 			});
 			goto(`/game/${joinCode.toUpperCase()}?pid=${playerId}`);
 		} catch (err: any) {
@@ -109,6 +104,33 @@
 				</div>
 				<div class="relative flex justify-center text-xs uppercase">
 					<span class="bg-neutral-800 px-2 text-neutral-500">Start Playing</span>
+				</div>
+			</div>
+
+			<div class="space-y-2" role="group" aria-labelledby="char-selection-label">
+				<div id="char-selection-label" class="block text-xs font-bold uppercase text-neutral-500">
+					Select Partner
+				</div>
+				<div class="grid grid-cols-4 gap-2">
+					{#each CHARACTERS as char}
+						<button
+							class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all bg-neutral-900 {selectedCharacter ===
+							char.id
+								? 'border-orange-500 scale-105'
+								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}"
+							onclick={() => (selectedCharacter = char.id)}
+							title={char.name}
+						>
+							<img
+								src={`/character/${char.assets.face}`}
+								alt={char.name}
+								class="w-full h-full object-contain p-1"
+							/>
+							{#if selectedCharacter === char.id}
+								<div class="absolute inset-0 bg-orange-500/10"></div>
+							{/if}
+						</button>
+					{/each}
 				</div>
 			</div>
 
