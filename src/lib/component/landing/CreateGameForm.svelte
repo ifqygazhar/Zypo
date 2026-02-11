@@ -36,7 +36,7 @@
 
 	function triggerUpload() {
 		if (!playerName.trim()) {
-			alert('Isi nama dulu sebelum upload!');
+			alert('Please enter your Codename first!');
 			return;
 		}
 		fileInput.click();
@@ -56,7 +56,7 @@
 			console.log('Upload sukses:', result.storageId);
 		} catch (err) {
 			console.error('Upload error:', err);
-			alert('Gagal mengupload gambar.');
+			alert('Failed to upload image.');
 			customAvatar = null;
 			selectedCharacter = '';
 		} finally {
@@ -66,7 +66,7 @@
 	}
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 w-full h-full">
 	<input
 		type="file"
 		accept="image/*"
@@ -75,104 +75,129 @@
 		onchange={handleFileUpload}
 	/>
 
-	<div class="flex flex-col gap-6 h-full justify-between">
-		<div class="space-y-4">
+	<div class="lg:col-span-5 flex flex-col gap-6 h-full">
+		<div class="space-y-5 bg-neutral-900/50 p-5 rounded-2xl border border-neutral-800 shadow-lg">
 			<div>
-				<label for="name" class="block text-xs font-bold uppercase text-neutral-500 mb-2 ml-1"
-					>Identity Access</label
+				<label
+					for="name"
+					class="flex items-center gap-2 text-xs font-bold uppercase text-orange-500 mb-2 ml-1 tracking-wider"
 				>
-				<div class="flex gap-2">
-					<input
-						id="name"
-						type="text"
-						bind:value={playerName}
-						placeholder="CODENAME"
-						class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl py-4 px-5 font-bold text-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-neutral-700 text-white"
-					/>
-					<input
-						type="text"
-						inputmode="numeric"
-						maxlength="4"
-						bind:value={playerPin}
-						placeholder="PIN"
-						class="w-24 bg-neutral-950 border border-neutral-800 rounded-xl py-4 px-5 font-bold text-lg text-center tracking-widest focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-neutral-700 text-white"
-						oninput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''))}
-					/>
+					<span class="bg-orange-500/10 p-1 rounded">ID</span> Identity Access
+				</label>
+
+				<div class="flex flex-col sm:flex-row gap-3">
+					<div class="relative flex-1 group">
+						<input
+							id="name"
+							type="text"
+							bind:value={playerName}
+							placeholder="CODENAME"
+							autocomplete="off"
+							class="w-full bg-black/40 border border-neutral-700 group-hover:border-neutral-500 focus:border-orange-500 rounded-xl py-3 px-4 font-bold text-lg text-white placeholder:text-neutral-700 outline-none transition-all shadow-inner"
+						/>
+					</div>
+
+					<div class="relative w-full sm:w-28 group">
+						<input
+							type="text"
+							inputmode="numeric"
+							maxlength="4"
+							bind:value={playerPin}
+							placeholder="PIN"
+							autocomplete="off"
+							class="w-full bg-black/40 border border-neutral-700 group-hover:border-neutral-500 focus:border-orange-500 rounded-xl py-3 px-4 font-mono font-bold text-lg text-center tracking-[0.2em] text-orange-400 placeholder:text-neutral-700 outline-none transition-all shadow-inner"
+							oninput={(e) =>
+								(e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''))}
+						/>
+					</div>
 				</div>
-				<p class="text-[10px] text-neutral-600 mt-2 ml-1">
-					* Set a 4-digit PIN to secure your rank.
+				<p class="text-[10px] text-neutral-500 mt-2 ml-1 flex items-center gap-1">
+					<span class="text-orange-500">*</span> Secure your rank with a 4-digit PIN.
 				</p>
 			</div>
 
-			<div class="bg-neutral-950/50 p-5 rounded-xl border border-neutral-800 border-dashed">
-				<div class="text-[10px] font-bold uppercase text-neutral-500 mb-3 tracking-wider">
-					Join via Code
+			<div class="pt-2 border-t border-neutral-800">
+				<div class="text-[10px] font-bold uppercase text-neutral-500 mb-3 tracking-wider ml-1">
+					Join Existing Lobby
 				</div>
 				{@render joinSection()}
 			</div>
 		</div>
 
-		<div class="space-y-3 mt-auto pt-4">
+		<div class="space-y-3 mt-auto">
 			<button
 				onclick={onQuickMatch}
 				disabled={isCreating || isUploading}
-				class="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-4 rounded-xl transition-all border border-neutral-700 hover:border-neutral-500 flex items-center justify-between px-6 group disabled:opacity-50 disabled:cursor-not-allowed"
+				class="relative w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-4 rounded-xl transition-all border border-neutral-700 hover:border-neutral-500 flex items-center justify-between px-6 group disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
 			>
-				<span class="text-sm uppercase tracking-wider text-neutral-400 group-hover:text-white"
+				<div
+					class="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+				></div>
+				<span
+					class="text-sm uppercase tracking-wider text-neutral-400 group-hover:text-white relative z-10"
 					>{isUploading ? 'UPLOADING...' : 'Quick Match'}</span
 				>
-				<span class="text-xl group-hover:translate-x-1 transition-transform">⚡️</span>
+				<span class="text-xl group-hover:scale-125 transition-transform relative z-10">⚡️</span>
 			</button>
 
 			<div class="relative flex items-center justify-center py-1">
-				<span class="text-[10px] text-neutral-600 bg-transparent px-2 uppercase font-mono"
-					>OR CREATE LOBBY</span
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-neutral-800"></div>
+				</div>
+				<span class="relative bg-neutral-900 px-2 text-[10px] text-neutral-600 uppercase font-mono"
+					>OR</span
 				>
 			</div>
 
 			<button
 				onclick={onCreate}
 				disabled={isCreating || isUploading}
-				class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(234,88,12,0.2)] hover:shadow-[0_0_30px_rgba(234,88,12,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+				class="w-full bg-linear-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_4px_20px_rgba(234,88,12,0.2)] hover:shadow-[0_4px_30px_rgba(234,88,12,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide border-t border-white/10"
 			>
 				{#if isUploading}
-					UPLOADING IMAGE...
+					<span class="animate-pulse">Uploading Image...</span>
 				{:else if isCreating}
-					INITIALIZING...
+					<span class="animate-pulse">Initializing...</span>
 				{:else}
-					CREATE NEW GAME
+					Create New Game
 				{/if}
 			</button>
 		</div>
 	</div>
 
 	<div
-		class="bg-neutral-950/50 p-5 rounded-xl border border-neutral-800 flex flex-col gap-6 h-full overflow-hidden"
+		class="lg:col-span-7 bg-neutral-900/50 p-1 rounded-2xl border border-neutral-800 flex flex-col h-125 lg:h-full relative overflow-hidden"
 	>
-		<div class="flex-1 overflow-y-auto pr-1 custom-scrollbar space-y-6">
+		<div
+			class="absolute top-0 left-0 w-full p-4 bg-neutral-900/90 backdrop-blur z-10 border-b border-neutral-800 flex justify-between items-center"
+		>
+			<span class="text-xs font-bold uppercase text-neutral-400 flex items-center gap-2">
+				<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Loadout Selection
+			</span>
+			<span
+				class="text-[10px] font-mono text-orange-500 border border-orange-500/30 px-2 py-0.5 rounded bg-orange-500/10 truncate max-w-30"
+			>
+				{customAvatar || !CHARACTERS.find((c) => c.id === selectedCharacter)
+					? 'CUSTOM'
+					: CHARACTERS.find((c) => c.id === selectedCharacter)?.name || 'UNKNOWN'}
+			</span>
+		</div>
+
+		<div class="flex-1 overflow-y-auto p-4 pt-16 custom-scrollbar space-y-8">
 			<div class="space-y-3">
-				<div class="flex justify-between items-center">
-					<span class="text-xs font-bold uppercase text-neutral-500">Operative</span>
-					<span
-						class="text-[10px] font-mono text-orange-500 border border-orange-500/30 px-1 rounded truncate max-w-[100px]"
-					>
-						{customAvatar || !CHARACTERS.find((c) => c.id === selectedCharacter)
-							? 'CUSTOM / COMMUNITY'
-							: CHARACTERS.find((c) => c.id === selectedCharacter)?.name || 'UNKNOWN'}
-					</span>
+				<div class="text-[10px] font-bold uppercase text-neutral-600 tracking-widest">
+					Select Operative
 				</div>
 
-				<div class="grid grid-cols-4 gap-2">
+				<div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
 					<button
-						class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all bg-neutral-900 flex flex-col items-center justify-center group
-                        {customAvatar &&
-						selectedCharacter &&
-						!CHARACTERS.find((c) => c.id === selectedCharacter)
-							? 'border-orange-500 scale-105 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
+						class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 flex flex-col items-center justify-center group
+						{customAvatar && selectedCharacter && !CHARACTERS.find((c) => c.id === selectedCharacter)
+							? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
 							: 'border-dashed border-neutral-700 hover:border-neutral-500 hover:bg-neutral-800'}"
 						onclick={triggerUpload}
 						disabled={isUploading}
-						title="Upload New"
+						title="Upload Custom Image"
 					>
 						{#if isUploading}
 							<div
@@ -181,12 +206,14 @@
 						{:else if customAvatar}
 							<img src={customAvatar} alt="Custom" class="w-full h-full object-cover" />
 							<div
-								class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+								class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
 							>
-								<span class="text-xs">✏️</span>
+								<span class="text-xs font-bold text-white">CHANGE</span>
 							</div>
 						{:else}
-							<span class="text-xl mb-1 text-neutral-500 group-hover:text-white">+</span>
+							<span class="text-2xl mb-1 text-neutral-500 group-hover:text-white transition-colors"
+								>+</span
+							>
 							<span
 								class="text-[8px] uppercase font-bold text-neutral-600 group-hover:text-neutral-400"
 								>Upload</span
@@ -196,13 +223,13 @@
 
 					{#each CHARACTERS as char}
 						<button
-							class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all bg-neutral-900 {selectedCharacter ===
+							class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 {selectedCharacter ===
 							char.id
-								? 'border-orange-500 scale-105 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
-								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}"
+								? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-10'
+								: 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 							onclick={() => {
 								selectedCharacter = char.id;
-								customAvatar = null; // Reset custom preview
+								customAvatar = null;
 							}}
 							title={char.name}
 						>
@@ -220,26 +247,27 @@
 			</div>
 
 			<div class="space-y-3">
-				<span class="text-xs font-bold uppercase text-neutral-500 flex items-center gap-2">
-					Community Agents
+				<div class="flex justify-between items-end">
+					<span class="text-[10px] font-bold uppercase text-neutral-600 tracking-widest"
+						>Community Agents</span
+					>
 					{#if communityAssets.isLoading}
-						<span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+						<span class="text-[9px] text-neutral-500 animate-pulse">SYNCING...</span>
 					{/if}
-				</span>
+				</div>
 
-				<div class="grid grid-cols-4 gap-2">
+				<div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
 					{#if communityAssets.data}
 						{#each communityAssets.data as asset}
 							<button
-								class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all bg-neutral-900 group
+								class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 group
                                 {selectedCharacter === asset.storageId
-									? 'border-orange-500 scale-105 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
-									: 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
+									? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-10'
+									: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 								onclick={() => {
 									selectedCharacter = asset.storageId;
-									customAvatar = asset.url; // Biar preview tombol upload jg ke update (opsional)
+									customAvatar = asset.url;
 								}}
-								title={`Uploaded by ${asset.uploaderName}`}
 							>
 								<img
 									src={asset.url}
@@ -248,44 +276,55 @@
 									loading="lazy"
 								/>
 								<div
-									class="absolute bottom-0 left-0 w-full bg-black/70 text-[6px] text-white text-center py-0.5 truncate px-1 opacity-0 group-hover:opacity-100 transition-opacity"
+									class="absolute bottom-0 left-0 w-full bg-black/80 text-[6px] text-neutral-300 text-center py-1 truncate px-1"
 								>
 									{asset.uploaderName}
 								</div>
 
 								{#if selectedCharacter === asset.storageId}
 									<div class="absolute inset-0 bg-orange-500/10"></div>
-									<div class="absolute top-1 right-1 text-[8px]">✅</div>
+									<div
+										class="absolute top-1 right-1 w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-black font-bold"
+									>
+										✓
+									</div>
 								{/if}
 							</button>
 						{/each}
 					{:else if communityAssets.isLoading}
-						{#each Array(4) as _}
-							<div class="aspect-square bg-neutral-800 rounded-lg animate-pulse"></div>
+						{#each Array(5) as _}
+							<div class="aspect-square bg-neutral-800/50 rounded-xl animate-pulse"></div>
 						{/each}
 					{/if}
 				</div>
 				{#if communityAssets.data && communityAssets.data.length === 0}
-					<div class="text-[10px] text-neutral-600 text-center py-2 italic">
-						No community uploads yet. Be the first!
+					<div class="p-4 rounded-xl border border-dashed border-neutral-800 text-center">
+						<div class="text-neutral-600 text-xs italic">
+							No comms detected. Be the first to upload.
+						</div>
 					</div>
 				{/if}
 			</div>
 
-			<div class="space-y-3 pb-2">
-				<span class="text-xs font-bold uppercase text-neutral-500">Deployment Zone</span>
-				<div class="grid grid-cols-3 gap-2">
+			<div class="space-y-3 pb-6">
+				<span class="text-[10px] font-bold uppercase text-neutral-600 tracking-widest"
+					>Deployment Zone</span
+				>
+				<div class="grid grid-cols-3 gap-3">
 					{#each MAPS as map}
 						<button
-							class="relative aspect-square rounded-lg overflow-hidden border-2 transition-all {selectedMap ===
+							class="relative aspect-video sm:aspect-square rounded-xl overflow-hidden border-2 transition-all {selectedMap ===
 							map
-								? 'border-orange-500 scale-105'
-								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'}"
+								? 'border-orange-500 scale-105 shadow-lg z-10'
+								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 							onclick={() => (selectedMap = map)}
 						>
 							<img src={`/map/${map}`} alt={map} class="w-full h-full object-cover" />
 							{#if selectedMap === map}
-								<div class="absolute inset-0 bg-orange-500/20"></div>
+								<div class="absolute inset-0 bg-orange-500/10"></div>
+								<div
+									class="absolute bottom-2 right-2 w-2 h-2 bg-orange-500 rounded-full shadow-[0_0_10px_orange]"
+								></div>
 							{/if}
 						</button>
 					{/each}
@@ -296,18 +335,18 @@
 </div>
 
 <style>
-	/* Styling scrollbar agar rapi di dalam box */
+	/* Thin & Cyberpunk Scrollbar */
 	.custom-scrollbar::-webkit-scrollbar {
 		width: 4px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-track {
-		background: transparent;
+		background: rgba(0, 0, 0, 0.2);
 	}
 	.custom-scrollbar::-webkit-scrollbar-thumb {
-		background: #333;
+		background: #444;
 		border-radius: 10px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-		background: #f97316;
+		background: #f97316; /* Orange hover */
 	}
 </style>
