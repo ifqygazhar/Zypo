@@ -62,13 +62,21 @@ export const joinGame = mutation({
 			.withIndex('by_code', (q) => q.eq('code', args.code))
 			.unique();
 		if (!game) throw new Error('Game not found');
-		// Relaxed joining condition for re-joining or debugging
+
+		const existingPlayerByName = game.players.find((p) => p.name === args.playerName);
+
+		if (existingPlayerByName) {
+			if (existingPlayerByName.id !== args.playerId) {
+				throw new Error('You are already in this game (Check other tabs)!');
+			}
+			return game._id;
+		}
+
 		if (game.status !== 'waiting' && !game.players.some((p) => p.id === args.playerId))
 			throw new Error('Game already started');
 		if (game.players.length >= 2 && !game.players.some((p) => p.id === args.playerId))
 			throw new Error('Game full');
 
-		// Check if player already joined
 		if (game.players.some((p) => p.id === args.playerId)) return game._id;
 
 		await ctx.db.patch(game._id, {
@@ -110,7 +118,6 @@ export const startGame = mutation({
 		const game = await ctx.db.get(args.gameId);
 		if (!game) throw new Error('Game not found');
 
-		// Select random question
 		const q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
 
 		await ctx.db.patch(args.gameId, {
@@ -125,7 +132,6 @@ export const startGame = mutation({
 	}
 });
 
-// The core duel mechanic: First correct answer hits the opponent
 export const submitAnswer = mutation({
 	args: { gameId: v.id('games'), playerId: v.string(), answerIndex: v.number() },
 	handler: async (ctx, args) => {
@@ -139,8 +145,6 @@ export const submitAnswer = mutation({
 		const q = game.currentQuestion;
 
 		if (args.answerIndex === q.correctIndex) {
-			// Correct Answer!
-			// Apply damage to Opponent
 			const newPlayers = game.players.map((p) => {
 				const isOpponent = p.id !== args.playerId;
 				console.log(
@@ -148,15 +152,12 @@ export const submitAnswer = mutation({
 				);
 
 				if (isOpponent) {
-					// Opponent takes damage
 					return { ...p, hp: Math.max(0, p.hp - 20) };
 				} else {
-					// Striker gets score
 					return { ...p, score: p.score + 100 };
 				}
 			});
 
-			// Check win condition
 			const opponent = newPlayers.find((p) => p.id !== args.playerId);
 			let winnerId = undefined;
 			let status = 'playing';
@@ -174,12 +175,10 @@ export const submitAnswer = mutation({
 					currentQuestion: undefined
 				});
 
-				// Update User Ranks
 				const winnerPlayer = newPlayers.find((p) => p.id === winnerId);
 				const loserPlayer = newPlayers.find((p) => p.id !== winnerId);
 
 				if (winnerPlayer && loserPlayer) {
-					// Find Users by Username (assuming unique username enforced at registration)
 					const winnerUser = await ctx.db
 						.query('users')
 						.withIndex('by_username', (q) => q.eq('username', winnerPlayer.name))
@@ -207,7 +206,6 @@ export const submitAnswer = mutation({
 
 				return 'WIN';
 			} else {
-				// Next question preparation
 				const nextQ = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
 				await ctx.db.patch(args.gameId, {
 					players: newPlayers,
@@ -246,7 +244,11 @@ export const quickMatch = mutation({
 
 		let chosenGame = null;
 
-		// 1. Try to find a waiting game with SAME COUNTRY & SIMILAR RANK (+/- 200)
+		// Helper untuk cek apakah game valid (belum penuh & user belum ada di sana)
+		const isValidGame = (g: any) => {
+			return g.players.length < 2 && !g.players.some((p: any) => p.name === args.playerName);
+		};
+
 		if (myCountry !== 'UN') {
 			const countryGames = await ctx.db
 				.query('games')
@@ -255,14 +257,11 @@ export const quickMatch = mutation({
 				)
 				.take(20);
 
-			// Filter for valid games (space available) and sort by rank diff
-			const validCountryGames = countryGames
-				.filter((g) => g.players.length < 2)
-				.sort((a, b) => {
-					const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
-					const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
-					return diffA - diffB;
-				});
+			const validCountryGames = countryGames.filter(isValidGame).sort((a, b) => {
+				const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
+				const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
+				return diffA - diffB;
+			});
 
 			if (validCountryGames.length > 0) {
 				const bestMatch = validCountryGames[0];
@@ -273,7 +272,6 @@ export const quickMatch = mutation({
 			}
 		}
 
-		// 2. If no country match, find ANY game with SIMILAR RANK (Global Search)
 		if (!chosenGame) {
 			const globalGames = await ctx.db
 				.query('games')
@@ -285,37 +283,29 @@ export const quickMatch = mutation({
 				)
 				.take(20);
 
-			const validGlobalGames = globalGames
-				.filter((g) => g.players.length < 2)
-				.sort((a, b) => {
-					const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
-					const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
-					return diffA - diffB;
-				});
+			const validGlobalGames = globalGames.filter(isValidGame).sort((a, b) => {
+				const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
+				const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
+				return diffA - diffB;
+			});
 
 			if (validGlobalGames.length > 0) {
 				chosenGame = validGlobalGames[0];
 			}
 		}
 
-		// 3. Last Resort: Any waiting game (Force match higher/lower rank)
 		if (!chosenGame) {
 			const anyGame = await ctx.db
 				.query('games')
 				.withIndex('by_status', (q) => q.eq('status', 'waiting'))
 				.first();
 
-			if (anyGame && anyGame.players.length < 2) {
+			if (anyGame && isValidGame(anyGame)) {
 				chosenGame = anyGame;
 			}
 		}
 
 		if (chosenGame) {
-			// Join existing game
-			if (chosenGame.players.some((p) => p.id === args.playerId)) {
-				return { gameId: chosenGame._id, code: chosenGame.code, status: 'joined' };
-			}
-
 			await ctx.db.patch(chosenGame._id, {
 				players: [
 					...chosenGame.players,
@@ -327,13 +317,10 @@ export const quickMatch = mutation({
 						hp: 100
 					}
 				]
-				// Clear public fields since game is now full/playing (optional, or keeping them is fine)
-				// We might want to remove them from index query if we switch status to playing later.
 			});
 
 			return { gameId: chosenGame._id, code: chosenGame.code, status: 'joined' };
 		} else {
-			// No game found, Create New Game
 			const code = Math.random().toString(36).substring(2, 7).toUpperCase();
 			const gameId = await ctx.db.insert('games', {
 				code,
