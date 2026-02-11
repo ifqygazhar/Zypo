@@ -5,10 +5,10 @@ export default defineSchema({
 	games: defineTable({
 		code: v.string(),
 		mapId: v.optional(v.string()),
-		status: v.string(), // "waiting", "playing", "finished"
+		status: v.string(),
 		players: v.array(
 			v.object({
-				id: v.string(), // Client-side generated ID or Convex User ID (using random string for no-auth simplicity)
+				id: v.string(),
 				name: v.string(),
 				characterId: v.optional(v.string()),
 				score: v.number(),
@@ -20,21 +20,23 @@ export default defineSchema({
 				text: v.string(),
 				options: v.array(v.string()),
 				correctIndex: v.number(),
-				startTime: v.number() // Timestamp for speed calculation
+				startTime: v.number()
 			})
 		),
-		winner: v.optional(v.string()), // Player ID of the winner
-		publicRank: v.optional(v.number()), // Rank of the host/waiting player
-		publicCountry: v.optional(v.string()) // Country of the host/waiting player
+		winner: v.optional(v.string()),
+		publicRank: v.optional(v.number()),
+		publicCountry: v.optional(v.string())
 	})
 		.index('by_code', ['code'])
 		.index('by_status', ['status'])
 		.index('by_status_rank', ['status', 'publicRank'])
 		.index('by_status_country', ['status', 'publicCountry']),
+
 	users: defineTable({
 		username: v.string(),
-		country: v.optional(v.string()), // ISO country code e.g. "ID", "US"
-		rank: v.number(), // Elo or simple points, default 1000
+		pin: v.optional(v.string()),
+		country: v.optional(v.string()),
+		rank: v.number(),
 		wins: v.number(),
 		gamesPlayed: v.number(),
 		createdAt: v.number()

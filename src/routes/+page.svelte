@@ -5,10 +5,10 @@
 	import { goto } from '$app/navigation';
 	import CreateGameForm from '$lib/component/landing/CreateGameForm.svelte';
 	import JoinGameForm from '$lib/component/landing/JoinGameForm.svelte';
-
 	import Leaderboard from '$lib/component/landing/Leaderboard.svelte';
 
 	let playerName = $state('');
+	let playerPin = $state('');
 	let joinCode = $state('');
 	let isCreating = $state(false);
 	let isJoining = $state(false);
@@ -16,7 +16,7 @@
 	let selectedMap = $state(MAPS[0]);
 	let selectedCharacter = $state(CHARACTERS[0].id);
 
-	async function registerUser(username: string) {
+	async function registerUser(username: string, pin: string) {
 		let country = 'UN';
 		try {
 			const res = await fetch('https://ipapi.co/json/');
@@ -29,26 +29,28 @@
 		}
 
 		try {
-			const result = await convex.mutation(api.users.register, { username, country });
-
+			const result = await convex.mutation(api.users.register, { username, pin, country });
 			if (!result.isNew) {
 				console.log(`Welcome back, agent ${username}!`);
 			}
 		} catch (e: any) {
 			console.error('Connection failed:', e);
+			if (e.message.includes('WRONG_PIN')) {
+				throw new Error('Invalid PIN for this username!');
+			}
 			throw new Error('Failed to connect to server');
 		}
 	}
 
 	async function handleCreate() {
-		if (!playerName.trim()) {
-			error = 'Please enter your name';
+		if (!playerName.trim() || playerPin.length !== 4) {
+			error = 'Enter name & 4-digit PIN';
 			return;
 		}
 		isCreating = true;
 		error = '';
 		try {
-			await registerUser(playerName);
+			await registerUser(playerName, playerPin);
 			const playerId = crypto.randomUUID();
 			sessionStorage.setItem('zypo_playerId', playerId);
 			sessionStorage.setItem('zypo_playerName', playerName);
@@ -68,14 +70,14 @@
 	}
 
 	async function handleJoin() {
-		if (!playerName.trim() || !joinCode.trim()) {
-			error = 'Enter name and game code';
+		if (!playerName.trim() || playerPin.length !== 4 || !joinCode.trim()) {
+			error = 'Enter name, PIN & Code';
 			return;
 		}
 		isJoining = true;
 		error = '';
 		try {
-			await registerUser(playerName);
+			await registerUser(playerName, playerPin);
 
 			const playerId = crypto.randomUUID();
 			sessionStorage.setItem('zypo_playerId', playerId);
@@ -96,15 +98,14 @@
 	}
 
 	async function handleQuickMatch() {
-		if (!playerName.trim()) {
-			error = 'Enter your name first!';
+		if (!playerName.trim() || playerPin.length !== 4) {
+			error = 'Enter name & PIN first!';
 			return;
 		}
 		isCreating = true;
 		error = '';
-
 		try {
-			await registerUser(playerName);
+			await registerUser(playerName, playerPin);
 
 			const playerId = crypto.randomUUID();
 			sessionStorage.setItem('zypo_playerId', playerId);
@@ -164,6 +165,7 @@
 
 			<CreateGameForm
 				bind:playerName
+				bind:playerPin
 				bind:selectedCharacter
 				bind:selectedMap
 				{isCreating}

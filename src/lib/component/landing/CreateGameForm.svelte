@@ -4,6 +4,7 @@
 
 	interface Props {
 		playerName: string;
+		playerPin: string;
 		selectedCharacter: string;
 		selectedMap: string;
 		isCreating: boolean;
@@ -14,6 +15,7 @@
 
 	let {
 		playerName = $bindable(),
+		playerPin = $bindable(),
 		selectedCharacter = $bindable(),
 		selectedMap = $bindable(),
 		isCreating,
@@ -23,74 +25,81 @@
 	}: Props = $props();
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-	<!-- LEFT COLUMN: Identity & Actions -->
-	<div class="space-y-6 flex flex-col justify-center">
-		<div>
-			<label for="name" class="block text-xs font-bold uppercase text-neutral-500 mb-1"
-				>Your Name</label
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full h-full">
+	<div class="flex flex-col gap-6 h-full justify-between">
+		<div class="space-y-4">
+			<div>
+				<label for="name" class="block text-xs font-bold uppercase text-neutral-500 mb-2 ml-1"
+					>Identity Access</label
+				>
+				<div class="flex gap-2">
+					<input
+						id="name"
+						type="text"
+						bind:value={playerName}
+						placeholder="CODENAME"
+						class="flex-1 bg-neutral-950 border border-neutral-800 rounded-xl py-4 px-5 font-bold text-lg focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-neutral-700 text-white"
+					/>
+					<input
+						type="text"
+						inputmode="numeric"
+						maxlength="4"
+						bind:value={playerPin}
+						placeholder="PIN"
+						class="w-24 bg-neutral-950 border border-neutral-800 rounded-xl py-4 px-5 font-bold text-lg text-center tracking-widest focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all placeholder:text-neutral-700 text-white"
+						oninput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/[^0-9]/g, ''))}
+					/>
+				</div>
+				<p class="text-[10px] text-neutral-600 mt-2 ml-1">
+					* Set a 4-digit PIN to secure your rank.
+				</p>
+			</div>
+
+			<div class="bg-neutral-950/50 p-5 rounded-xl border border-neutral-800 border-dashed">
+				<div class="text-[10px] font-bold uppercase text-neutral-500 mb-3 tracking-wider">
+					Join via Code
+				</div>
+				{@render joinSection()}
+			</div>
+		</div>
+
+		<div class="space-y-3 mt-auto pt-4">
+			<button
+				onclick={onQuickMatch}
+				disabled={isCreating}
+				class="w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-4 rounded-xl transition-all border border-neutral-700 hover:border-neutral-500 flex items-center justify-between px-6 group disabled:opacity-50"
 			>
-			<input
-				id="name"
-				type="text"
-				bind:value={playerName}
-				placeholder="Enter nickname..."
-				class="w-full bg-neutral-900 border border-neutral-700 rounded-lg py-3 px-4 font-bold focus:outline-none focus:border-orange-500 transition-colors"
-			/>
-		</div>
+				<span class="text-sm uppercase tracking-wider text-neutral-400 group-hover:text-white"
+					>Quick Match</span
+				>
+				<span class="text-xl group-hover:translate-x-1 transition-transform">⚡️</span>
+			</button>
 
-		<!-- JOIN SECTION -->
-		<div class="bg-neutral-900/50 p-4 rounded-xl border border-neutral-700/50">
-			<div class="text-xs font-bold uppercase text-neutral-500 mb-2">Join Existing Game</div>
-			{@render joinSection()}
-		</div>
-
-		<div class="relative py-2">
-			<div class="absolute inset-0 flex items-center">
-				<div class="w-full border-t border-neutral-700"></div>
+			<div class="relative flex items-center justify-center py-1">
+				<span class="text-[10px] text-neutral-600 bg-transparent px-2 uppercase font-mono"
+					>OR CREATE LOBBY</span
+				>
 			</div>
-			<div class="relative flex justify-center text-xs uppercase">
-				<span class="bg-neutral-800 px-2 text-neutral-500">OR</span>
-			</div>
+
+			<button
+				onclick={onCreate}
+				disabled={isCreating}
+				class="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(234,88,12,0.2)] hover:shadow-[0_0_30px_rgba(234,88,12,0.4)] active:scale-[0.98] disabled:opacity-50"
+			>
+				{isCreating ? 'INITIALIZING...' : 'CREATE NEW GAME'}
+			</button>
 		</div>
-
-		<button
-			onclick={onQuickMatch}
-			disabled={isCreating}
-			class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-lg transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 group"
-		>
-			<span>SEARCH OPPONENT</span>
-			<span class="group-hover:translate-x-1 transition-transform">→</span>
-		</button>
-
-		<div class="relative py-2">
-			<div class="absolute inset-0 flex items-center">
-				<div class="w-full border-t border-neutral-700"></div>
-			</div>
-			<div class="relative flex justify-center text-xs uppercase">
-				<span class="bg-neutral-800 px-2 text-neutral-500">Custom Game</span>
-			</div>
-		</div>
-
-		<button
-			onclick={onCreate}
-			disabled={isCreating}
-			class="w-full bg-orange-500 hover:bg-orange-600 text-black font-black py-4 rounded-lg transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-orange-900/20"
-		>
-			{isCreating ? 'CREATING...' : 'CREATE NEW GAME'}
-		</button>
 	</div>
 
-	<!-- RIGHT COLUMN: Loadout -->
-	<div class="space-y-6 bg-neutral-900/30 p-4 rounded-xl border border-neutral-800">
-		<div class="space-y-2" role="group" aria-labelledby="char-selection-label">
-			<div class="flex justify-between items-end">
-				<div id="char-selection-label" class="block text-xs font-bold uppercase text-neutral-500">
-					Select Partner
-				</div>
-				<div class="text-[10px] text-orange-500 font-mono">
-					{CHARACTERS.find((c) => c.id === selectedCharacter)?.name.toUpperCase()} SYSTEM
-				</div>
+	<div class="bg-neutral-950/50 p-5 rounded-xl border border-neutral-800 flex flex-col gap-6">
+		<div class="space-y-3">
+			<div class="flex justify-between items-center">
+				<span class="text-xs font-bold uppercase text-neutral-500">Operative</span>
+				<span
+					class="text-[10px] font-mono text-orange-500 border border-orange-500/30 px-1 rounded"
+				>
+					{CHARACTERS.find((c) => c.id === selectedCharacter)?.name}
+				</span>
 			</div>
 			<div class="grid grid-cols-4 gap-2">
 				{#each CHARACTERS as char}
@@ -115,10 +124,8 @@
 			</div>
 		</div>
 
-		<div class="space-y-2" role="group" aria-labelledby="map-selection-label">
-			<div id="map-selection-label" class="block text-xs font-bold uppercase text-neutral-500">
-				Select Battleground
-			</div>
+		<div class="space-y-3 mt-auto">
+			<span class="text-xs font-bold uppercase text-neutral-500">Deployment Zone</span>
 			<div class="grid grid-cols-3 gap-2">
 				{#each MAPS as map}
 					<button

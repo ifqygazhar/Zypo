@@ -4,6 +4,7 @@ import { v } from 'convex/values';
 export const register = mutation({
 	args: {
 		username: v.string(),
+		pin: v.string(),
 		country: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
@@ -13,8 +14,16 @@ export const register = mutation({
 			.unique();
 
 		if (existingUser) {
+			if (existingUser.pin && existingUser.pin !== args.pin) {
+				throw new Error('WRONG_PIN');
+			}
+
 			if (args.country && existingUser.country !== args.country) {
 				await ctx.db.patch(existingUser._id, { country: args.country });
+			}
+
+			if (!existingUser.pin) {
+				await ctx.db.patch(existingUser._id, { pin: args.pin });
 			}
 
 			return {
@@ -26,6 +35,7 @@ export const register = mutation({
 
 		const userId = await ctx.db.insert('users', {
 			username: args.username,
+			pin: args.pin,
 			country: args.country,
 			rank: 1000,
 			wins: 0,
@@ -48,7 +58,7 @@ export const login = mutation({
 			.unique();
 
 		if (!user) {
-			return null; // Signals client to register
+			return null;
 		}
 
 		return { userId: user._id, username: user.username, rank: user.rank };
