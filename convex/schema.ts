@@ -23,8 +23,22 @@ export default defineSchema({
 				startTime: v.number() // Timestamp for speed calculation
 			})
 		),
-		winner: v.optional(v.string()) // Player ID of the winner
+		winner: v.optional(v.string()), // Player ID of the winner
+		publicRank: v.optional(v.number()), // Rank of the host/waiting player
+		publicCountry: v.optional(v.string()) // Country of the host/waiting player
 	})
 		.index('by_code', ['code'])
 		.index('by_status', ['status'])
+		.index('by_status_rank', ['status', 'publicRank'])
+		.index('by_status_country', ['status', 'publicCountry']),
+	users: defineTable({
+		username: v.string(),
+		country: v.optional(v.string()), // ISO country code e.g. "ID", "US"
+		rank: v.number(), // Elo or simple points, default 1000
+		wins: v.number(),
+		gamesPlayed: v.number(),
+		createdAt: v.number()
+	})
+		.index('by_username', ['username'])
+		.index('by_rank', ['rank'])
 });

@@ -20,11 +20,21 @@ export const createGame = mutation({
 		characterId: v.string()
 	},
 	handler: async (ctx, args) => {
+		const user = await ctx.db
+			.query('users')
+			.withIndex('by_username', (q) => q.eq('username', args.playerName))
+			.unique();
+
+		const myRank = user?.rank ?? 1000;
+		const myCountry = user?.country ?? 'UN';
+
 		const code = Math.random().toString(36).substring(2, 7).toUpperCase();
 		const gameId = await ctx.db.insert('games', {
 			code,
 			mapId: args.mapId,
 			status: 'waiting',
+			publicRank: myRank,
+			publicCountry: myCountry,
 			players: [
 				{
 					id: args.playerId,
@@ -163,6 +173,38 @@ export const submitAnswer = mutation({
 					winner: winnerId,
 					currentQuestion: undefined
 				});
+
+				// Update User Ranks
+				const winnerPlayer = newPlayers.find((p) => p.id === winnerId);
+				const loserPlayer = newPlayers.find((p) => p.id !== winnerId);
+
+				if (winnerPlayer && loserPlayer) {
+					// Find Users by Username (assuming unique username enforced at registration)
+					const winnerUser = await ctx.db
+						.query('users')
+						.withIndex('by_username', (q) => q.eq('username', winnerPlayer.name))
+						.unique();
+					const loserUser = await ctx.db
+						.query('users')
+						.withIndex('by_username', (q) => q.eq('username', loserPlayer.name))
+						.unique();
+
+					if (winnerUser) {
+						await ctx.db.patch(winnerUser._id, {
+							wins: winnerUser.wins + 1,
+							gamesPlayed: winnerUser.gamesPlayed + 1,
+							rank: winnerUser.rank + 25
+						});
+					}
+
+					if (loserUser) {
+						await ctx.db.patch(loserUser._id, {
+							gamesPlayed: loserUser.gamesPlayed + 1,
+							rank: Math.max(0, loserUser.rank - 10)
+						});
+					}
+				}
+
 				return 'WIN';
 			} else {
 				// Next question preparation
@@ -193,24 +235,90 @@ export const quickMatch = mutation({
 		mapId: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
-		// 1. Try to find a waiting game with space
-		const waitingGames = await ctx.db
-			.query('games')
-			.withIndex('by_status', (q) => q.eq('status', 'waiting'))
-			.take(10); // Take a few to check player count
+		// 0. Get User Stats
+		const user = await ctx.db
+			.query('users')
+			.withIndex('by_username', (q) => q.eq('username', args.playerName))
+			.unique();
 
-		const availableGame = waitingGames.find((g) => g.players.length < 2);
+		const myRank = user?.rank ?? 1000;
+		const myCountry = user?.country ?? 'UN';
 
-		if (availableGame) {
+		let chosenGame = null;
+
+		// 1. Try to find a waiting game with SAME COUNTRY & SIMILAR RANK (+/- 200)
+		if (myCountry !== 'UN') {
+			const countryGames = await ctx.db
+				.query('games')
+				.withIndex('by_status_country', (q) =>
+					q.eq('status', 'waiting').eq('publicCountry', myCountry)
+				)
+				.take(20);
+
+			// Filter for valid games (space available) and sort by rank diff
+			const validCountryGames = countryGames
+				.filter((g) => g.players.length < 2)
+				.sort((a, b) => {
+					const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
+					const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
+					return diffA - diffB;
+				});
+
+			if (validCountryGames.length > 0) {
+				const bestMatch = validCountryGames[0];
+				// Check if rank is within acceptable range (e.g. 500)
+				if (Math.abs((bestMatch.publicRank ?? 1000) - myRank) <= 500) {
+					chosenGame = bestMatch;
+				}
+			}
+		}
+
+		// 2. If no country match, find ANY game with SIMILAR RANK (Global Search)
+		if (!chosenGame) {
+			const globalGames = await ctx.db
+				.query('games')
+				.withIndex('by_status_rank', (q) =>
+					q
+						.eq('status', 'waiting')
+						.gte('publicRank', myRank - 500)
+						.lte('publicRank', myRank + 500)
+				)
+				.take(20);
+
+			const validGlobalGames = globalGames
+				.filter((g) => g.players.length < 2)
+				.sort((a, b) => {
+					const diffA = Math.abs((a.publicRank ?? 1000) - myRank);
+					const diffB = Math.abs((b.publicRank ?? 1000) - myRank);
+					return diffA - diffB;
+				});
+
+			if (validGlobalGames.length > 0) {
+				chosenGame = validGlobalGames[0];
+			}
+		}
+
+		// 3. Last Resort: Any waiting game (Force match higher/lower rank)
+		if (!chosenGame) {
+			const anyGame = await ctx.db
+				.query('games')
+				.withIndex('by_status', (q) => q.eq('status', 'waiting'))
+				.first();
+
+			if (anyGame && anyGame.players.length < 2) {
+				chosenGame = anyGame;
+			}
+		}
+
+		if (chosenGame) {
 			// Join existing game
-			// Check if player already joined (idempotency)
-			if (availableGame.players.some((p) => p.id === args.playerId)) {
-				return { gameId: availableGame._id, code: availableGame.code, status: 'joined' };
+			if (chosenGame.players.some((p) => p.id === args.playerId)) {
+				return { gameId: chosenGame._id, code: chosenGame.code, status: 'joined' };
 			}
 
-			await ctx.db.patch(availableGame._id, {
+			await ctx.db.patch(chosenGame._id, {
 				players: [
-					...availableGame.players,
+					...chosenGame.players,
 					{
 						id: args.playerId,
 						name: args.playerName,
@@ -219,16 +327,20 @@ export const quickMatch = mutation({
 						hp: 100
 					}
 				]
+				// Clear public fields since game is now full/playing (optional, or keeping them is fine)
+				// We might want to remove them from index query if we switch status to playing later.
 			});
 
-			return { gameId: availableGame._id, code: availableGame.code, status: 'joined' };
+			return { gameId: chosenGame._id, code: chosenGame.code, status: 'joined' };
 		} else {
-			// No game found, create new one
+			// No game found, Create New Game
 			const code = Math.random().toString(36).substring(2, 7).toUpperCase();
 			const gameId = await ctx.db.insert('games', {
 				code,
-				mapId: args.mapId || 'metropolis_1.webp', // Default map if not provided
+				mapId: args.mapId || 'metropolis_1.webp',
 				status: 'waiting',
+				publicRank: myRank,
+				publicCountry: myCountry,
 				players: [
 					{
 						id: args.playerId,
