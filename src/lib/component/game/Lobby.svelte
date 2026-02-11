@@ -20,7 +20,25 @@
 	}
 </script>
 
-<!-- LOBBY BACKGROUND -->
+{#snippet RenderAvatar(characterId: string)}
+	{#if characterId && (characterId.startsWith('data:image') || characterId.startsWith('http'))}
+		<img
+			src={characterId}
+			alt="Custom Agent"
+			class="w-full h-full object-cover rounded-lg shadow-inner"
+		/>
+	{:else}
+		{@const char = CHARACTERS.find((c) => c.id === characterId)}
+		{#if char}
+			<img
+				src={`/character/${char.assets.front}`}
+				alt={char.name}
+				class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500"
+			/>
+		{/if}
+	{/if}
+{/snippet}
+
 {#if game.mapId}
 	<div class="absolute inset-0 z-0">
 		<img
@@ -35,7 +53,6 @@
 <div
 	class="relative z-10 w-full max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 h-[90vh] items-center p-4 content-center"
 >
-	<!-- LEFT COLUMN: CODE & ACTIONS -->
 	<div class="flex flex-col items-center md:items-start space-y-12 order-2 md:order-1">
 		<div class="text-center md:text-left">
 			<button
@@ -67,7 +84,6 @@
 			</button>
 		</div>
 
-		<!-- ACTION BUTTON -->
 		<div class="w-full max-w-md">
 			{#if game.players.length >= 2}
 				<button onclick={onStartGame} class="w-full relative group overflow-hidden rounded-lg">
@@ -93,17 +109,14 @@
 		</div>
 	</div>
 
-	<!-- RIGHT COLUMN: PLAYERS & VS -->
 	<div class="flex items-center justify-center gap-4 md:gap-8 order-1 md:order-2">
 		{#each game.players as p, i}
-			{@const char = CHARACTERS.find((c) => c.id === p.characterId)}
 			<div class="relative w-36 md:w-64 h-56 md:h-80 perspective-1000 group">
 				<div
 					class="w-full h-full bg-neutral-900 border-2 {p.id === playerId
 						? 'border-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.3)]'
 						: 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)]'} rounded-xl overflow-hidden flex flex-col relative"
 				>
-					<!-- BG GLOW -->
 					<div
 						class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 md:w-40 h-24 md:h-40 {p.id ===
 						playerId
@@ -111,18 +124,10 @@
 							: 'bg-blue-500/20'} blur-3xl rounded-full"
 					></div>
 
-					<!-- AVATAR -->
 					<div class="flex-1 relative p-2 md:p-4 flex items-center justify-center">
-						{#if char}
-							<img
-								src={`/character/${char.assets.front}`}
-								alt={char.name}
-								class="w-full h-full object-contain drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500"
-							/>
-						{/if}
+						{@render RenderAvatar(p.characterId)}
 					</div>
 
-					<!-- INFO -->
 					<div class="bg-black/80 backdrop-blur p-2 md:p-4 border-t border-white/10">
 						<div class="font-black text-sm md:text-xl truncate uppercase">{p.name}</div>
 						<div class="flex justify-between items-center mt-1">
@@ -144,7 +149,6 @@
 				{/if}
 			</div>
 
-			<!-- VS BADGE -->
 			{#if i === 0 && game.players.length >= 2}
 				<div
 					class="text-3xl md:text-6xl font-black text-red-600 italic animate-pulse -mx-2 md:px-4 z-10"
@@ -154,9 +158,7 @@
 			{/if}
 		{/each}
 
-		<!-- EMPTY SLOT -->
 		{#if game.players.length < 2}
-			<!-- Placeholder for Opponent -->
 			<div
 				class="w-36 md:w-64 h-56 md:h-80 relative rounded-xl border-2 border-dashed border-neutral-700 bg-black/20 flex flex-col items-center justify-center text-neutral-600 gap-4"
 			>

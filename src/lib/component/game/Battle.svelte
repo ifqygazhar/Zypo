@@ -14,14 +14,39 @@
 	let currentPlayer = $derived(game?.players.find((p: any) => p.id === playerId));
 	let opponent = $derived(game?.players.find((p: any) => p.id !== playerId));
 
-	let playerChar = $derived(CHARACTERS.find((c) => c.id === currentPlayer?.characterId));
-	let opponentChar = $derived(CHARACTERS.find((c) => c.id === opponent?.characterId));
+	function isCustom(charId: string) {
+		return charId && (charId.startsWith('data:image') || charId.startsWith('http'));
+	}
+
+	function getCharAsset(charId: string, type: 'front' | 'back') {
+		const char = CHARACTERS.find((c) => c.id === charId);
+		return char ? `/character/${char.assets[type]}` : '';
+	}
 </script>
 
+{#snippet BattleAvatar(charId: string, type: 'front' | 'back')}
+	{#if isCustom(charId)}
+		<div class="relative w-full h-full flex items-end justify-center">
+			<img
+				src={charId}
+				alt="Agent"
+				class="w-3/4 h-3/4 object-cover rounded-xl border-4 border-white/20 shadow-2xl {type ===
+				'back'
+					? ''
+					: 'scale-x-[-1]'}"
+			/>
+		</div>
+	{:else}
+		<img
+			src={getCharAsset(charId, type)}
+			alt="Agent"
+			class="w-full h-full object-contain object-bottom drop-shadow-2xl"
+		/>
+	{/if}
+{/snippet}
+
 <div class="relative w-full flex-1 min-h-0 flex flex-col perspective-1000 overflow-hidden">
-	<!-- BATTLE VIEW -->
 	<div class="flex-1 relative w-full overflow-hidden group">
-		<!-- BATTLEGROUND BACKGROUND -->
 		{#if game?.mapId}
 			<div class="absolute inset-0 z-0 select-none pointer-events-none">
 				<img
@@ -33,12 +58,10 @@
 			</div>
 		{/if}
 
-		<!-- OPPONENT (Top Right) -->
 		{#if opponent}
 			<div
 				class="absolute bottom-[35%] md:bottom-[20%] right-[5%] md:right-[10%] flex flex-col items-center z-10 transition-all duration-500 scale-75 md:scale-100 origin-bottom"
 			>
-				<!-- HUD -->
 				<div
 					class="bg-white/90 text-black p-2 rounded-xl border-l-4 border-l-red-500 shadow-md mb-2 md:mb-4 w-40 md:w-56 transform -skew-x-6 backdrop-blur-sm"
 				>
@@ -56,62 +79,32 @@
 					</div>
 				</div>
 
-				<!-- CHARACTER CONTAINER -->
 				<div class="relative group">
-					<!-- PLATFORM/SHADOW -->
 					<div
 						class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-32 md:w-48 h-8 md:h-12 bg-black/40 blur-xl rounded-[100%] scale-y-50"
 					></div>
-					<div
-						class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-24 md:w-40 h-6 md:h-10 bg-radial-gradient(circle, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 70%) scale-y-50"
-					></div>
 
-					<!-- SPRITE -->
 					<div class="relative w-32 h-32 md:w-40 md:h-40 animate-pulse-slow">
-						{#if opponentChar}
-							<img
-								src={`/character/${opponentChar.assets.front}`}
-								alt={opponent.name}
-								class="w-full h-full object-contain object-bottom drop-shadow-2xl"
-							/>
-						{:else}
-							<div class="w-full h-full bg-red-500/20 rounded-full blur-xl"></div>
-						{/if}
+						{@render BattleAvatar(opponent.characterId, 'front')}
 					</div>
 				</div>
 			</div>
 		{/if}
 
-		<!-- PLAYER (Bottom Left) -->
 		{#if currentPlayer}
 			<div
 				class="absolute bottom-[5%] left-[5%] flex flex-col items-center z-20 transition-all duration-500 scale-90 md:scale-100 origin-bottom-left"
 			>
-				<!-- CHARACTER CONTAINER -->
 				<div class="relative mb-4 md:mb-6 group">
-					<!-- PLATFORM/SHADOW -->
 					<div
 						class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-48 md:w-64 h-12 md:h-16 bg-black/50 blur-xl rounded-[100%] scale-y-50"
 					></div>
-					<div
-						class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-40 md:w-56 h-8 md:h-12 bg-radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 70%) scale-y-50"
-					></div>
 
-					<!-- SPRITE -->
 					<div class="relative w-40 h-40 md:w-56 md:h-56">
-						{#if playerChar}
-							<img
-								src={`/character/${playerChar.assets.back}`}
-								alt={currentPlayer.name}
-								class="w-full h-full object-contain object-bottom drop-shadow-2xl"
-							/>
-						{:else}
-							<div class="w-full h-full bg-blue-500/20 rounded-full blur-xl"></div>
-						{/if}
+						{@render BattleAvatar(currentPlayer.characterId, 'back')}
 					</div>
 				</div>
 
-				<!-- HUD -->
 				<div
 					class="bg-white/90 text-black p-2 md:p-3 rounded-xl border-r-4 border-r-blue-500 shadow-lg w-64 md:w-72 transform skew-x-6 backdrop-blur-sm"
 				>
@@ -140,7 +133,6 @@
 			</div>
 		{/if}
 
-		<!-- FEEDBACK OVERLAY -->
 		{#if answerResult}
 			<div class="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
 				{#if answerResult === 'HIT'}
@@ -160,11 +152,9 @@
 		{/if}
 	</div>
 
-	<!-- BATTLE MENU / DIALOGUE -->
 	<div
 		class="h-auto md:h-48 bg-neutral-800 border-t-4 border-orange-500 p-2 md:p-4 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 shrink-0 z-30 pb-safe"
 	>
-		<!-- TEXT BOX -->
 		<div
 			class="col-span-1 md:col-span-2 bg-neutral-900 border-2 border-neutral-600 rounded p-2 md:p-4 font-mono text-sm md:text-lg leading-relaxed text-white h-24 md:h-auto overflow-y-auto"
 		>
@@ -182,7 +172,6 @@
 			{/if}
 		</div>
 
-		<!-- ACTIONS -->
 		<div class="grid grid-cols-2 gap-2 h-24 md:h-auto">
 			{#each game.currentQuestion?.options || [] as option, i}
 				<button

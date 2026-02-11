@@ -42,5 +42,10 @@ export default defineSchema({
 		createdAt: v.number()
 	})
 		.index('by_username', ['username'])
-		.index('by_rank', ['rank'])
+		.index('by_rank', ['rank']),
+	public_assets: defineTable({
+		storageId: v.string(),
+		uploaderName: v.string(),
+		createdAt: v.number()
+	}).index('by_createdAt', ['createdAt'])
 });

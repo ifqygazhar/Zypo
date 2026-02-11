@@ -98,17 +98,81 @@ export const joinGame = mutation({
 export const getGame = query({
 	args: { gameId: v.id('games') },
 	handler: async (ctx, args) => {
-		return await ctx.db.get(args.gameId);
+		const game = await ctx.db.get(args.gameId);
+		if (!game) return null;
+
+		// MAP PLAYERS: Ubah Storage ID menjadi URL Gambar yang bisa dilihat semua orang
+		const playersWithUrls = await Promise.all(
+			game.players.map(async (p) => {
+				let finalImageUrl = p.characterId;
+
+				// Jika ini bukan karakter bawaan (tidak ada di list default)
+				// DAN bukan Base64 (berarti ini Storage ID dari Convex)
+				const isDefaultChar = ['volcoli', 'viviteel', 'vivitron', 'velocitile'].includes(
+					p.characterId || ''
+				);
+
+				if (
+					p.characterId &&
+					!isDefaultChar &&
+					!p.characterId.startsWith('data:image') &&
+					!p.characterId.startsWith('http')
+				) {
+					// Convert Storage ID -> Public URL
+					const url = await ctx.storage.getUrl(p.characterId);
+					if (url) finalImageUrl = url;
+				}
+
+				return {
+					...p,
+					// Kita timpa characterId dengan URL asli agar frontend bisa langsung render
+					characterId: finalImageUrl
+				};
+			})
+		);
+
+		return { ...game, players: playersWithUrls };
 	}
 });
 
+// 👇 UPDATE: Menambahkan logika konversi URL ke getByCode juga
 export const getByCode = query({
 	args: { code: v.string() },
 	handler: async (ctx, args) => {
-		return await ctx.db
+		const game = await ctx.db
 			.query('games')
 			.withIndex('by_code', (q) => q.eq('code', args.code))
 			.unique();
+
+		if (!game) return null;
+
+		// MAP PLAYERS: Sama seperti getGame, ubah Storage ID jadi Public URL
+		const playersWithUrls = await Promise.all(
+			game.players.map(async (p) => {
+				let finalImageUrl = p.characterId;
+
+				const isDefaultChar = ['volcoli', 'viviteel', 'vivitron', 'velocitile'].includes(
+					p.characterId || ''
+				);
+
+				if (
+					p.characterId &&
+					!isDefaultChar &&
+					!p.characterId.startsWith('data:image') &&
+					!p.characterId.startsWith('http')
+				) {
+					const url = await ctx.storage.getUrl(p.characterId);
+					if (url) finalImageUrl = url;
+				}
+
+				return {
+					...p,
+					characterId: finalImageUrl
+				};
+			})
+		);
+
+		return { ...game, players: playersWithUrls };
 	}
 });
 

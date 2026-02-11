@@ -11,16 +11,36 @@
 	let actualWinner = $derived(game.players.find((p: any) => p.id === game.winner));
 	let actualLoser = $derived(game.players.find((p: any) => p.id !== game.winner));
 
-	let winnerChar = $derived(CHARACTERS.find((c) => c.id === actualWinner?.characterId));
-	let loserChar = $derived(CHARACTERS.find((c) => c.id === actualLoser?.characterId));
-
 	let isVictory = $derived(game.winner === playerId);
+	function isCustom(charId: string) {
+		return charId && (charId.startsWith('data:image') || charId.startsWith('http'));
+	}
+
+	function getCharAsset(charId: string, type: 'front' | 'back') {
+		const char = CHARACTERS.find((c) => c.id === charId);
+		return char ? `/character/${char.assets[type]}` : '';
+	}
 </script>
+
+{#snippet RenderAvatar(charId: string)}
+	{#if isCustom(charId)}
+		<img
+			src={charId}
+			alt="Player"
+			class="w-full h-full object-cover rounded-xl border-4 border-white/20 shadow-2xl"
+		/>
+	{:else}
+		<img
+			src={getCharAsset(charId, 'front')}
+			alt="Player"
+			class="w-full h-full object-contain object-bottom drop-shadow-xl"
+		/>
+	{/if}
+{/snippet}
 
 <div
 	class="relative w-full min-h-screen flex flex-col items-center justify-center overflow-hidden font-mono text-white pt-20 pb-10"
 >
-	<!-- BACKGROUND -->
 	{#if game.mapId}
 		<div class="absolute inset-0 z-0">
 			<img
@@ -32,9 +52,7 @@
 		</div>
 	{/if}
 
-	<!-- CONTENT CONTAINER -->
 	<div class="relative z-10 w-full max-w-6xl mx-auto px-4 flex flex-col items-center">
-		<!-- HEADER STATUS -->
 		<div class="mb-4 md:mb-12 text-center">
 			<h1
 				class="text-4xl md:text-7xl font-black italic tracking-tighter uppercase mb-2 {isVictory
@@ -50,19 +68,14 @@
 			</div>
 		</div>
 
-		<!-- MAIN PLAYERS GRID -->
 		<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 w-full items-end mb-12">
 			<div class="order-2 md:order-1 flex justify-center md:justify-end">
-				{#if actualLoser && loserChar}
+				{#if actualLoser}
 					<div
 						class="relative group opacity-50 hover:opacity-100 transition-opacity grayscale hover:grayscale-0 duration-500 scale-90 origin-bottom"
 					>
 						<div class="w-48 h-64 relative">
-							<img
-								src={`/character/${loserChar.assets.front}`}
-								alt={actualLoser.name}
-								class="w-full h-full object-contain object-bottom drop-shadow-xl"
-							/>
+							{@render RenderAvatar(actualLoser.characterId)}
 						</div>
 						<div
 							class="bg-black/50 p-2 text-center border-t-2 border-red-800/50 backdrop-blur skew-x-6"
@@ -74,21 +87,15 @@
 				{/if}
 			</div>
 
-			<!-- WINNER (Center - Largest) -->
 			<div class="order-1 md:order-2 flex flex-col items-center relative z-20">
-				{#if actualWinner && winnerChar}
+				{#if actualWinner}
 					<div class="relative origin-bottom transform transition-transform hover:scale-105">
-						<!-- RADIANT BACKGROUND GLOW -->
 						<div
 							class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 md:w-96 md:h-96 bg-gradient-radial from-orange-500/30 to-transparent blur-3xl animate-pulse"
 						></div>
 
 						<div class="w-64 h-80 md:w-80 md:h-96 relative">
-							<img
-								src={`/character/${winnerChar.assets.front}`}
-								alt={actualWinner.name}
-								class="w-full h-full object-contain object-bottom drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-							/>
+							{@render RenderAvatar(actualWinner.characterId)}
 						</div>
 
 						<div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-64 md:w-80">
@@ -109,7 +116,6 @@
 				{/if}
 			</div>
 
-			<!-- EMPTY SLOT RIGHT (For balance or Stats) -->
 			<div class="order-3 hidden md:flex flex-col justify-end items-start text-left opacity-60">
 				<div class="space-y-4 text-sm font-mono border-l-2 border-white/20 pl-4">
 					<div>
@@ -128,7 +134,6 @@
 			</div>
 		</div>
 
-		<!-- ACTIONS -->
 		<div class="mt-8 md:mt-16">
 			<a
 				href="/"
