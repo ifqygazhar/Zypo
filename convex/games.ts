@@ -1,7 +1,6 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
-// Data for Questions (Including Coding Questions)
 const QUESTIONS = [
 	{ text: 'What is 2 + 2?', options: ['3', '4', '5', '6'], correct: 1 },
 	{
@@ -60,8 +59,8 @@ export const createGame = mutation({
 			status: 'waiting',
 			publicRank: myRank,
 			publicCountry: myCountry,
-			questions: args.questions, // Save custom questions
-			participants: [args.playerName], // Add creator to participants
+			questions: args.questions,
+			participants: [args.playerName],
 			players: [
 				{
 					id: args.playerId,
@@ -153,7 +152,7 @@ export const getGame = query({
 
 				return {
 					...p,
-					// Kita timpa characterId dengan URL asli agar frontend bisa langsung render
+
 					characterId: finalImageUrl
 				};
 			})
@@ -163,7 +162,6 @@ export const getGame = query({
 	}
 });
 
-// 👇 UPDATE: Menambahkan logika konversi URL ke getByCode juga
 export const getByCode = query({
 	args: { code: v.string() },
 	handler: async (ctx, args) => {
@@ -174,7 +172,6 @@ export const getByCode = query({
 
 		if (!game) return null;
 
-		// MAP PLAYERS: Sama seperti getGame, ubah Storage ID jadi Public URL
 		const playersWithUrls = await Promise.all(
 			game.players.map(async (p) => {
 				let finalImageUrl = p.characterId;
@@ -212,7 +209,6 @@ export const startGame = mutation({
 
 		console.log('startGame questions:', game.questions ? game.questions.length : 'undefined');
 
-		// Use custom questions if available, otherwise default
 		const questionSource = game.questions && game.questions.length > 0 ? game.questions : QUESTIONS;
 		const q = questionSource[Math.floor(Math.random() * questionSource.length)];
 
@@ -220,7 +216,7 @@ export const startGame = mutation({
 			status: 'playing',
 			currentQuestion: {
 				text: q.text,
-				code: q.code, // include code if present
+				code: q.code,
 				options: q.options,
 				correctIndex: q.correct,
 				startTime: Date.now()
@@ -305,12 +301,18 @@ export const submitAnswer = mutation({
 			} else {
 				const questionSource =
 					game.questions && game.questions.length > 0 ? game.questions : QUESTIONS;
-				const nextQ = questionSource[Math.floor(Math.random() * questionSource.length)];
+
+				const currentText = game.currentQuestion?.text;
+				const availableQuestions = questionSource.filter((totalQ) => totalQ.text !== currentText);
+
+				const candidates = availableQuestions.length > 0 ? availableQuestions : questionSource;
+
+				const nextQ = candidates[Math.floor(Math.random() * candidates.length)];
 				await ctx.db.patch(args.gameId, {
 					players: newPlayers,
 					currentQuestion: {
 						text: nextQ.text,
-						code: nextQ.code, // include code if present
+						code: nextQ.code,
 						options: nextQ.options,
 						correctIndex: nextQ.correct,
 						startTime: Date.now()
@@ -333,7 +335,6 @@ export const quickMatch = mutation({
 		mapId: v.optional(v.string())
 	},
 	handler: async (ctx, args) => {
-		// 0. Get User Stats
 		const user = await ctx.db
 			.query('users')
 			.withIndex('by_username', (q) => q.eq('username', args.playerName))
@@ -364,7 +365,7 @@ export const quickMatch = mutation({
 
 			if (validCountryGames.length > 0) {
 				const bestMatch = validCountryGames[0];
-				// Check if rank is within acceptable range (e.g. 500)
+
 				if (Math.abs((bestMatch.publicRank ?? 1000) - myRank) <= 500) {
 					chosenGame = bestMatch;
 				}
@@ -452,7 +453,6 @@ export const getHistory = query({
 	handler: async (ctx, args) => {
 		const games = await ctx.db.query('games').order('desc').take(100);
 
-		// Filter for games where the user is a participant
 		const userGames = games.filter((g) => g.participants?.includes(args.username));
 		const limitedGames = userGames.slice(0, args.limit || 20);
 
