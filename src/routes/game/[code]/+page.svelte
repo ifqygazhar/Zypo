@@ -22,6 +22,7 @@
 	let questionKey = $derived(game?.currentQuestion?.startTime);
 
 	let battleTrack = $state('');
+	let statusDelayed = $state('waiting');
 
 	onMount(() => {
 		if (!playerId) {
@@ -39,9 +40,24 @@
 
 	$effect(() => {
 		if (!game) return;
-		if (game.status === 'waiting') audioState.setTrack('/bgm/bgm-lobby.ogg');
-		else if (game.status === 'playing') audioState.setTrack(battleTrack);
-		else if (game.status === 'finished') audioState.setTrack('/bgm/bgm-end-game.mp3');
+
+		// Immediate updates for normal states
+		if (game.status === 'waiting' || game.status === 'playing') {
+			statusDelayed = game.status;
+		}
+		// Delay for 'finished' state
+		else if (game.status === 'finished' && statusDelayed !== 'finished') {
+			setTimeout(() => {
+				statusDelayed = 'finished';
+			}, 3000); // 3 seconds delay for death animation
+		}
+	});
+
+	$effect(() => {
+		if (!game) return;
+		if (statusDelayed === 'waiting') audioState.setTrack('/bgm/bgm-lobby.ogg');
+		else if (statusDelayed === 'playing') audioState.setTrack(battleTrack);
+		else if (statusDelayed === 'finished') audioState.setTrack('/bgm/bgm-end-game.mp3');
 	});
 
 	$effect(() => {
@@ -97,11 +113,11 @@
 				<h1 class="text-red-500 text-2xl font-bold mb-4">GAME NOT FOUND</h1>
 				<a href="/" class="underline text-neutral-500">Return to Base</a>
 			</div>
-		{:else if game.status === 'waiting'}
+		{:else if statusDelayed === 'waiting'}
 			<Lobby {game} {playerId} onStartGame={startGame} />
-		{:else if game.status === 'playing'}
+		{:else if statusDelayed === 'playing'}
 			<Battle {game} {playerId} {isSubmitting} {answerResult} onSubmitAnswer={submitAnswer} />
-		{:else if game.status === 'finished'}
+		{:else if statusDelayed === 'finished'}
 			<GameOver {game} {playerId} />
 		{/if}
 	</div>
