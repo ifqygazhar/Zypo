@@ -101,7 +101,7 @@
 
 <div class="space-y-3 pb-6 border-b border-neutral-800 mb-6">
 	<span class="text-[10px] font-bold uppercase text-neutral-600 tracking-widest"
-		>Mission Intel (Optional)</span
+		>Mission Intel (Required)</span
 	>
 	<div class="bg-neutral-900/50 p-3 rounded-xl border border-neutral-800">
 		<div class="flex justify-between items-center mb-2">

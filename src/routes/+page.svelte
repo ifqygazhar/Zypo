@@ -7,13 +7,13 @@
 	import JoinGameForm from '$lib/component/landing/JoinGameForm.svelte';
 	import Leaderboard from '$lib/component/landing/Leaderboard.svelte';
 	import formatError from '$lib/utils/error_format';
+	import { toast } from 'svelte-sonner';
 
 	let playerName = $state('');
 	let playerPin = $state('');
 	let joinCode = $state('');
 	let isCreating = $state(false);
 	let isJoining = $state(false);
-	let error = $state('');
 	let selectedMap = $state(MAPS[0]);
 	let selectedCharacter = $state(CHARACTERS[0].id);
 	let customQuestions = $state<any[] | undefined>(undefined);
@@ -47,16 +47,23 @@
 
 	async function handleCreate() {
 		if (!playerName.trim() || playerPin.length !== 4) {
-			error = 'Enter name & 4-digit PIN';
+			toast.error('Enter name & 4-digit PIN');
 			return;
 		}
 		isCreating = true;
-		error = '';
 		try {
 			await registerUser(playerName, playerPin);
 			const playerId = crypto.randomUUID();
 			sessionStorage.setItem('zypo_playerId', playerId);
 			sessionStorage.setItem('zypo_playerName', playerName);
+
+			if (!customQuestions) {
+				toast.error('Mission Intel Required! Please upload or select questions from the Library.', {
+					duration: 4000
+				});
+				isCreating = false;
+				return;
+			}
 
 			console.log('Creating game with questions:', customQuestions);
 
@@ -70,7 +77,7 @@
 			});
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (err: any) {
-			error = formatError(err);
+			toast.error(formatError(err));
 		} finally {
 			isCreating = false;
 		}
@@ -78,11 +85,10 @@
 
 	async function handleJoin() {
 		if (!playerName.trim() || playerPin.length !== 4 || !joinCode.trim()) {
-			error = 'Enter name, PIN & Code';
+			toast.error('Enter name, PIN & Code');
 			return;
 		}
 		isJoining = true;
-		error = '';
 		try {
 			await registerUser(playerName, playerPin);
 
@@ -98,7 +104,7 @@
 			});
 			goto(`/game/${joinCode.toUpperCase()}?pid=${playerId}`);
 		} catch (err: any) {
-			error = formatError(err);
+			toast.error(formatError(err));
 		} finally {
 			isJoining = false;
 		}
@@ -112,11 +118,10 @@
 
 	async function handleQuickMatch() {
 		if (!playerName.trim() || playerPin.length !== 4) {
-			error = 'Enter name & PIN first!';
+			toast.error('Enter name & PIN first!');
 			return;
 		}
 		isCreating = true;
-		error = '';
 		try {
 			await registerUser(playerName, playerPin);
 
@@ -134,7 +139,7 @@
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (e: any) {
 			console.error(e);
-			error = formatError(e);
+			toast.error(formatError(e));
 			isCreating = false;
 		}
 	}
@@ -160,14 +165,6 @@
 				THINK FAST. STRIKE HARD.
 			</p>
 		</div>
-
-		{#if error}
-			<div
-				class="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-2 rounded-lg text-sm font-bold animate-pulse"
-			>
-				⚠️ {error}
-			</div>
-		{/if}
 	</div>
 
 	<div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-start z-10">

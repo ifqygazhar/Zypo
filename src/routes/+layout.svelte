@@ -6,6 +6,8 @@
 	import { setupConvex } from 'convex-svelte';
 	import AudioControl from '$lib/component/common/AudioControl.svelte';
 
+	import { Toaster } from 'svelte-sonner';
+
 	let { children } = $props();
 
 	setupConvex(PUBLIC_CONVEX_URL);
@@ -15,5 +17,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<Toaster position="top-center" richColors closeButton theme="dark" />
 <AudioControl />
 {@render children()}
