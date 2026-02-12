@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="w-full bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl overflow-hidden flex flex-col h-[600px] lg:h-full min-h-[500px] shadow-xl"
+	class="w-full bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl overflow-hidden flex flex-col h-150 lg:h-full min-h-125 shadow-xl"
 >
 	<div class="p-4 border-b border-neutral-800 bg-neutral-900/50 flex justify-between items-center">
 		<h2 class="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
@@ -45,7 +45,7 @@
 			<div
 				class="flex items-center gap-3 p-3 rounded-xl border border-transparent hover:border-neutral-700 hover:bg-neutral-800 transition-all group {i <
 				3
-					? 'bg-gradient-to-r from-neutral-800/50 to-transparent'
+					? 'bg-linear-to-r from-neutral-800/50 to-transparent'
 					: ''}"
 			>
 				<div
@@ -81,7 +81,6 @@
 </div>
 
 <style>
-	/* Scrollbar lebih tipis & halus */
 	.custom-scrollbar::-webkit-scrollbar {
 		width: 4px;
 	}
@@ -93,6 +92,6 @@
 		border-radius: 10px;
 	}
 	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-		background: #f97316; /* Orange saat hover */
+		background: #f97316;
 	}
 </style>
