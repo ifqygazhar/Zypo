@@ -23,19 +23,13 @@ const authLimit = new Ratelimit({
 });
 
 export const handle: Handle = async ({ event, resolve }) => {
-	let ip = '127.0.0.1';
-	try {
-		ip = event.getClientAddress();
-	} catch (e) {
-		return resolve(event);
-	}
-
+	const ip = event.getClientAddress();
 	const path = event.url.pathname;
 
 	if (
 		path.startsWith('/_app/') ||
 		path.startsWith('/favicon') ||
-		path.match(/\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico|webp|mp3|ogg)$/)
+		path.match(/\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico)$/)
 	) {
 		return resolve(event, {
 			preload: ({ type }) => type === 'font' || type === 'js' || type === 'css'
