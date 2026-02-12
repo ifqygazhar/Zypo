@@ -53,10 +53,7 @@
 							<li>Synthwave Chase - "Grid Runner"</li>
 						</ul>
 						<p class="text-xs text-neutral-600 mt-2">
-							Royalty-free licenses obtained from <a
-								href="#"
-								class="text-neutral-400 hover:text-white">AudioLibrary</a
-							>
+							Royalty-free licenses obtained from <span class="text-neutral-400">AudioLibrary</span>
 						</p>
 					</div>
 

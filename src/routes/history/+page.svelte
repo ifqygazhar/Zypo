@@ -60,10 +60,13 @@
 
 				<div class="space-y-4">
 					<div>
-						<label class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1"
+						<label
+							for="username"
+							class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1"
 							>Codename</label
 						>
 						<input
+							id="username"
 							bind:value={username}
 							type="text"
 							placeholder="e.g. Shadow"
@@ -71,10 +74,13 @@
 						/>
 					</div>
 					<div>
-						<label class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1"
+						<label
+							for="pin"
+							class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-1"
 							>PIN</label
 						>
 						<input
+							id="pin"
 							bind:value={pin}
 							type="password"
 							maxlength="4"

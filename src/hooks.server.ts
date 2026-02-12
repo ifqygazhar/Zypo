@@ -23,7 +23,13 @@ const authLimit = new Ratelimit({
 });
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const ip = event.getClientAddress();
+	let ip = '127.0.0.1';
+	try {
+		ip = event.getClientAddress();
+	} catch (e) {
+		return resolve(event);
+	}
+
 	const path = event.url.pathname;
 
 	if (
