@@ -108,7 +108,7 @@
 			<span class="text-xs text-neutral-400">Custom Questions</span>
 			<button
 				onclick={downloadTemplate}
-				class="text-[10px] text-orange-500 hover:text-orange-400 underline font-mono"
+				class="cursor-pointer text-[10px] text-orange-500 hover:text-orange-400 underline font-mono"
 			>
 				Download Template
 			</button>
@@ -117,7 +117,7 @@
 		<!-- TABS FOR QUESTION SOURCE -->
 		<div class="flex gap-2 mb-3">
 			<button
-				class="flex-1 py-1 text-[10px] font-bold uppercase rounded transition-colors {questionSourceMode ===
+				class="cursor-pointer flex-1 py-1 text-[10px] font-bold uppercase rounded transition-colors {questionSourceMode ===
 				'upload'
 					? 'bg-orange-500 text-black'
 					: 'bg-neutral-800 text-neutral-500 hover:text-neutral-300'}"
@@ -126,7 +126,7 @@
 				Upload File
 			</button>
 			<button
-				class="flex-1 py-1 text-[10px] font-bold uppercase rounded transition-colors {questionSourceMode ===
+				class="cursor-pointer flex-1 py-1 text-[10px] font-bold uppercase rounded transition-colors {questionSourceMode ===
 				'library'
 					? 'bg-orange-500 text-black'
 					: 'bg-neutral-800 text-neutral-500 hover:text-neutral-300'}"
@@ -153,7 +153,7 @@
 					<button
 						onclick={handleSaveToLibrary}
 						disabled={isSaving}
-						class="flex-1 py-1 text-[10px] bg-neutral-800 hover:bg-neutral-700 text-white rounded transition-colors border border-neutral-700"
+						class="cursor-pointer flex-1 py-1 text-[10px] bg-neutral-800 hover:bg-neutral-700 text-white rounded transition-colors border border-neutral-700"
 					>
 						{isSaving ? 'Saving...' : 'Save to Library'}
 					</button>
@@ -163,7 +163,7 @@
 							customQuestions = null;
 							if (questionFileInput) questionFileInput.value = '';
 						}}
-						class="flex-1 py-1 text-[10px] text-red-500 hover:bg-red-500/10 rounded transition-colors"
+						class="cursor-pointer flex-1 py-1 text-[10px] text-red-500 hover:bg-red-500/10 rounded transition-colors"
 					>
 						Remove
 					</button>
@@ -171,7 +171,7 @@
 			{:else}
 				<button
 					onclick={() => questionFileInput?.click()}
-					class="w-full py-3 border border-dashed border-neutral-700 hover:border-orange-500 hover:bg-orange-500/5 rounded-lg text-neutral-500 hover:text-orange-500 transition-all text-xs font-mono uppercase flex items-center justify-center gap-2"
+					class="cursor-pointer w-full py-3 border border-dashed border-neutral-700 hover:border-orange-500 hover:bg-orange-500/5 rounded-lg text-neutral-500 hover:text-orange-500 transition-all text-xs font-mono uppercase flex items-center justify-center gap-2"
 				>
 					<span>+ Upload JSON Intel</span>
 				</button>
@@ -199,7 +199,7 @@
 					{:else if publicQuestions.data}
 						{#each publicQuestions.data as set}
 							<button
-								class="w-full text-left p-2 rounded border transition-all {customQuestions ===
+								class="cursor-pointer w-full text-left p-2 rounded border transition-all {customQuestions ===
 								set.questions
 									? 'bg-orange-500/10 border-orange-500'
 									: 'bg-black/20 border-neutral-800 hover:border-neutral-600'}"

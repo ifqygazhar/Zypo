@@ -57,7 +57,7 @@
 		<div class="text-center md:text-left">
 			<button
 				onclick={copyCode}
-				class="group relative inline-flex flex-col items-center md:items-start hover:scale-105 transition-transform"
+				class="cursor-pointer group relative inline-flex flex-col items-center md:items-start hover:scale-105 transition-transform"
 			>
 				<div class="text-xs md:text-sm font-bold text-neutral-400 mb-2 tracking-[0.2em] uppercase">
 					Mission Access Code
@@ -86,7 +86,10 @@
 
 		<div class="w-full max-w-md">
 			{#if game.players.length >= 2}
-				<button onclick={onStartGame} class="w-full relative group overflow-hidden rounded-lg">
+				<button
+					onclick={onStartGame}
+					class="cursor-pointer w-full relative group overflow-hidden rounded-lg"
+				>
 					<div
 						class="absolute inset-0 bg-orange-500 group-hover:bg-orange-400 transition-colors"
 					></div>

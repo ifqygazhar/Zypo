@@ -92,7 +92,7 @@
 
 			<div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
 				<button
-					class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 flex flex-col items-center justify-center group
+					class="cursor-pointer relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 flex flex-col items-center justify-center group
 					{customAvatar && selectedCharacter && !CHARACTERS.find((c) => c.id === selectedCharacter)
 						? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)]'
 						: 'border-dashed border-neutral-700 hover:border-neutral-500 hover:bg-neutral-800'}"
@@ -124,7 +124,7 @@
 
 				{#each CHARACTERS as char}
 					<button
-						class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 {selectedCharacter ===
+						class="cursor-pointer relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 {selectedCharacter ===
 						char.id
 							? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-0'
 							: 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
@@ -161,7 +161,7 @@
 				{#if communityAssets.data}
 					{#each communityAssets.data as asset}
 						<button
-							class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 group
+							class="cursor-pointer relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 group
                             {selectedCharacter === asset.storageId
 								? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-0'
 								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"

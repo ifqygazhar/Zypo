@@ -74,7 +74,7 @@
 		<button
 			onclick={onQuickMatch}
 			disabled={isCreating || isUploading}
-			class="relative w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-4 rounded-xl transition-all border border-neutral-700 hover:border-neutral-500 flex items-center justify-between px-6 group disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+			class="cursor-pointer relative w-full bg-neutral-800 hover:bg-neutral-700 text-white font-bold py-4 rounded-xl transition-all border border-neutral-700 hover:border-neutral-500 flex items-center justify-between px-6 group disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
 		>
 			<div
 				class="absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"
@@ -98,7 +98,7 @@
 		<button
 			onclick={onCreate}
 			disabled={isCreating || isUploading}
-			class="w-full bg-linear-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_4px_20px_rgba(234,88,12,0.2)] hover:shadow-[0_4px_30px_rgba(234,88,12,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide border-t border-white/10"
+			class="cursor-pointer w-full bg-linear-to-r from-orange-700 to-orange-600 hover:from-orange-600 hover:to-orange-500 text-white font-black py-4 rounded-xl transition-all shadow-[0_4px_20px_rgba(234,88,12,0.2)] hover:shadow-[0_4px_30px_rgba(234,88,12,0.4)] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide border-t border-white/10"
 		>
 			{#if isUploading}
 				<span class="animate-pulse">Uploading Image...</span>

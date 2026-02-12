@@ -15,7 +15,7 @@
 	<div class="grid grid-cols-3 gap-3">
 		{#each MAPS as map}
 			<button
-				class="relative aspect-video sm:aspect-square rounded-xl overflow-hidden border-2 transition-all {selectedMap ===
+				class="cursor-pointer relative aspect-video sm:aspect-square rounded-xl overflow-hidden border-2 transition-all {selectedMap ===
 				map
 					? 'border-orange-500 scale-105 shadow-lg z-0'
 					: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"

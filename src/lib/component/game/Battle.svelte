@@ -243,7 +243,7 @@
 				<button
 					onclick={() => onSubmitAnswer(i)}
 					disabled={isSubmitting}
-					class="bg-white text-black border-b-4 border-neutral-400 hover:border-b-0 hover:translate-y-1 hover:bg-orange-100 font-bold rounded p-1 md:p-2 text-xs md:text-sm uppercase transition-all flex items-center justify-center text-center active:scale-95"
+					class="cursor-pointer bg-white text-black border-b-4 border-neutral-400 hover:border-b-0 hover:translate-y-1 hover:bg-orange-100 font-bold rounded p-1 md:p-2 text-xs md:text-sm uppercase transition-all flex items-center justify-center text-center active:scale-95"
 				>
 					{option}
 				</button>

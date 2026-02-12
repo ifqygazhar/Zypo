@@ -18,7 +18,7 @@
 	<button
 		onclick={onJoin}
 		disabled={isJoining}
-		class="bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-transform active:scale-95 disabled:opacity-50"
+		class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-transform active:scale-95 disabled:opacity-50"
 	>
 		JOIN
 	</button>
