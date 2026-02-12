@@ -61,6 +61,7 @@ export const createGame = mutation({
 			publicRank: myRank,
 			publicCountry: myCountry,
 			questions: args.questions, // Save custom questions
+			participants: [args.playerName], // Add creator to participants
 			players: [
 				{
 					id: args.playerId,
@@ -106,6 +107,7 @@ export const joinGame = mutation({
 		if (game.players.some((p) => p.id === args.playerId)) return game._id;
 
 		await ctx.db.patch(game._id, {
+			participants: [...(game.participants || []), args.playerName], // Add new player
 			players: [
 				...game.players,
 				{
@@ -404,6 +406,7 @@ export const quickMatch = mutation({
 
 		if (chosenGame) {
 			await ctx.db.patch(chosenGame._id, {
+				participants: [...(chosenGame.participants || []), args.playerName],
 				players: [
 					...chosenGame.players,
 					{
@@ -425,6 +428,7 @@ export const quickMatch = mutation({
 				status: 'waiting',
 				publicRank: myRank,
 				publicCountry: myCountry,
+				participants: [args.playerName],
 				players: [
 					{
 						id: args.playerId,
@@ -437,5 +441,37 @@ export const quickMatch = mutation({
 			});
 			return { gameId, code, status: 'created' };
 		}
+	}
+});
+
+export const getHistory = query({
+	args: {
+		username: v.string(),
+		limit: v.optional(v.number())
+	},
+	handler: async (ctx, args) => {
+		const games = await ctx.db.query('games').order('desc').take(100);
+
+		// Filter for games where the user is a participant
+		const userGames = games.filter((g) => g.participants?.includes(args.username));
+		const limitedGames = userGames.slice(0, args.limit || 20);
+
+		return limitedGames.map((g) => {
+			const me = g.players.find((p) => p.name === args.username);
+			const opponent = g.players.find((p) => p.name !== args.username);
+			const isWinner = g.winner === me?.id;
+			const isDraw = g.status === 'finished' && !g.winner;
+
+			return {
+				_id: g._id,
+				code: g.code,
+				mapId: g.mapId,
+				status: g.status,
+				createdAt: g._creationTime,
+				myScore: me?.score || 0,
+				result: isWinner ? 'WIN' : isDraw ? 'DRAW' : g.status === 'finished' ? 'LOSE' : g.status,
+				opponentName: opponent?.name || 'Waiting...'
+			};
+		});
 	}
 });

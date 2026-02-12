@@ -36,12 +36,14 @@ export default defineSchema({
 					correct: v.number()
 				})
 			)
-		)
+		),
+		participants: v.optional(v.array(v.string())) // For efficient history query
 	})
 		.index('by_code', ['code'])
 		.index('by_status', ['status'])
 		.index('by_status_rank', ['status', 'publicRank'])
-		.index('by_status_country', ['status', 'publicCountry']),
+		.index('by_status_country', ['status', 'publicCountry'])
+		.index('by_participants', ['participants']),
 
 	users: defineTable({
 		username: v.string(),

@@ -46,7 +46,7 @@
 
 				<div class="relative w-full sm:w-28 group">
 					<input
-						type="text"
+						type="password"
 						inputmode="numeric"
 						maxlength="4"
 						bind:value={playerPin}

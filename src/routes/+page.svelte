@@ -167,6 +167,23 @@
 		</div>
 	</div>
 
+	<div
+		class="fixed z-40 flex items-center gap-4 text-xs font-mono font-bold tracking-widest text-neutral-500
+        bottom-4 right-4
+        md:top-8 md:right-8 md:bottom-auto"
+	>
+		<a
+			href="/history"
+			class="hover:text-orange-500 transition-colors bg-black/50 px-3 py-1 rounded-full border border-neutral-800 backdrop-blur-md"
+			>HISTORY</a
+		>
+		<a
+			href="/credits"
+			class="hover:text-orange-500 transition-colors bg-black/50 px-3 py-1 rounded-full border border-neutral-800 backdrop-blur-md"
+			>CREDITS</a
+		>
+	</div>
+
 	<div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6 items-start z-10">
 		<div
 			class="lg:col-span-8 bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden group"
