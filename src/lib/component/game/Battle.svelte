@@ -14,6 +14,19 @@
 	let currentPlayer = $derived(game?.players.find((p: any) => p.id === playerId));
 	let opponent = $derived(game?.players.find((p: any) => p.id !== playerId));
 
+	let lastPlayerHp = $state(100);
+	let hitByEnemy = $state(false);
+
+	$effect(() => {
+		if (currentPlayer) {
+			if (currentPlayer.hp < lastPlayerHp) {
+				hitByEnemy = true;
+				setTimeout(() => (hitByEnemy = false), 1000);
+			}
+			lastPlayerHp = currentPlayer.hp;
+		}
+	});
+
 	function isCustom(charId: string) {
 		return charId && (charId.startsWith('data:image') || charId.startsWith('http'));
 	}
@@ -60,10 +73,33 @@
 
 		{#if opponent}
 			<div
-				class="absolute bottom-[35%] md:bottom-[20%] right-[5%] md:right-[10%] flex flex-col items-center z-10 transition-all duration-500 scale-75 md:scale-100 origin-bottom"
+				class="absolute bottom-[35%] md:bottom-[20%] right-[5%] md:right-[10%] flex flex-col items-center z-10 transition-all duration-500 scale-75 md:scale-100 origin-bottom {answerResult ===
+				'HIT'
+					? 'shake'
+					: ''}"
 			>
+				{#if answerResult}
+					<div
+						class="absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap z-50 animate-bounce"
+					>
+						{#if answerResult === 'HIT'}
+							<div
+								class="bg-red-600 text-white font-black text-xl md:text-3xl px-4 py-1 border-2 border-white -rotate-12 shadow-lg"
+							>
+								CRITICAL HIT!
+							</div>
+						{:else if answerResult === 'MISS'}
+							<div
+								class="bg-neutral-800 text-white font-black text-xl md:text-3xl px-4 py-1 border-2 border-neutral-500 rotate-6 shadow-lg"
+							>
+								MISS!
+							</div>
+						{/if}
+					</div>
+				{/if}
+
 				<div
-					class="bg-white/90 text-black p-2 rounded-xl border-l-4 border-l-red-500 shadow-md mb-2 md:mb-4 w-40 md:w-56 transform -skew-x-6 backdrop-blur-sm"
+					class="bg-white/90 text-black p-2 rounded-xl border-l-4 border-l-red-500 shadow-md mb-2 md:mb-4 w-40 md:w-56 transform -skew-x-6 backdrop-blur-sm relative"
 				>
 					<div
 						class="flex justify-between font-bold text-[10px] md:text-xs uppercase tracking-wider mb-1 px-1"
@@ -93,8 +129,22 @@
 
 		{#if currentPlayer}
 			<div
-				class="absolute bottom-[5%] left-[5%] flex flex-col items-center z-20 transition-all duration-500 scale-90 md:scale-100 origin-bottom-left"
+				class="absolute bottom-[5%] left-[5%] flex flex-col items-center z-20 transition-all duration-500 scale-90 md:scale-100 origin-bottom-left {hitByEnemy
+					? 'shake'
+					: ''}"
 			>
+				{#if hitByEnemy}
+					<div
+						class="absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap z-50 animate-bounce"
+					>
+						<div
+							class="bg-red-600 text-white font-black text-xl md:text-3xl px-4 py-1 border-2 border-white rotate-12 shadow-lg"
+						>
+							HIT!
+						</div>
+					</div>
+				{/if}
+
 				<div class="relative mb-4 md:mb-6 group">
 					<div
 						class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-48 md:w-64 h-12 md:h-16 bg-black/50 blur-xl rounded-[100%] scale-y-50"
@@ -132,24 +182,6 @@
 				</div>
 			</div>
 		{/if}
-
-		{#if answerResult}
-			<div class="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
-				{#if answerResult === 'HIT'}
-					<div
-						class="bg-white text-black font-black text-4xl md:text-6xl px-8 py-4 border-4 border-black -rotate-6 shadow-[8px_8px_0_0_rgba(0,0,0,1)] animate-bounce"
-					>
-						CRITICAL HIT!
-					</div>
-				{:else}
-					<div
-						class="bg-neutral-800 text-white font-black text-2xl md:text-4xl px-8 py-4 border-4 border-white rotate-6 animate-pulse"
-					>
-						ATTACK MISSED!
-					</div>
-				{/if}
-			</div>
-		{/if}
 	</div>
 
 	<div
@@ -185,3 +217,32 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.shake {
+		animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	}
+
+	@keyframes shake {
+		10%,
+		90% {
+			transform: translate3d(-1px, 0, 0);
+		}
+
+		20%,
+		80% {
+			transform: translate3d(2px, 0, 0);
+		}
+
+		30%,
+		50%,
+		70% {
+			transform: translate3d(-4px, 0, 0);
+		}
+
+		40%,
+		60% {
+			transform: translate3d(4px, 0, 0);
+		}
+	}
+</style>

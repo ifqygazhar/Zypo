@@ -9,8 +9,6 @@
 
 	import { audioState } from '$lib/audioState.svelte';
 
-	// ... (imports)
-
 	const gameCode = page.params.code ?? '';
 
 	let playerId = $state(page.url.searchParams.get('pid') ?? '');
