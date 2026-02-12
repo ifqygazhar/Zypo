@@ -1,42 +1,67 @@
-# sv
+# Zypo 🎮
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+**Zypo** is a real-time multiplayer game built with modern web technologies, designed for fast-paced action and instant fun.
 
-## Creating a project
+![Home Interface](img_readme/image-1-home-interface.webp)
+![Battle Interface](img_readme/image-2-battle-interface.webp)
 
-If you're seeing this, you've probably already done this step. Congrats!
+## 🚀 Key Features
 
-```sh
-# create a new project
-npx sv create my-app
-```
+- **Real-time Multiplayer**: Powered by Convex for instant updates and synchronized gameplay.
+- **Lobby System**: Create or join game rooms with unique codes.
+- **Global Leaderboard**: Compete with players worldwide and see country flags on the leaderboard.
+- **Map Selection**: Choose from different battle environments.
+- **Responsive Design**: Optimized for both desktop and mobile play.
 
-To recreate this project with the same configuration:
+## 🛠️ Tech Stack
 
-```sh
-# recreate this project
-bun x sv create --template minimal --types ts --add prettier eslint --install bun Zypo
-```
+- **Framework**: [SvelteKit](https://kit.svelte.dev/)
+- **Backend**: [Convex](https://convex.dev/) (Real-time database & functions)
+- **Styling**: [TailwindCSS](https://tailwindcss.com/)
+- **State Management**: Svelte Stores & Convex Reactivity
 
-## Developing
+## 📦 Getting Started
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Follow these steps to set up the project locally:
 
-```sh
-npm run dev
+1.  **Clone the repository:**
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+    ```bash
+    git clone https://github.com/yourusername/zypo.git
+    cd zypo
+    ```
 
-## Building
+2.  **Install dependencies:**
 
-To create a production version of your app:
+    ```bash
+    npm install
+    # or
+    bun install
+    ```
 
-```sh
-npm run build
-```
+3.  **Start the Convex backend:**
+    This will initialize your Convex project and keep the backend functions running.
 
-You can preview the production build with `npm run preview`.
+    ```bash
+    npx convex dev
+    ```
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+4.  **Start the development server:**
+    Open a new terminal window and run:
+
+    ```bash
+    npm run dev
+    # or
+    bun run dev
+    ```
+
+5.  **Open the app:**
+    Visit `http://localhost:5173` in your browser.
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## 📄 License
+
+This project is open-source.
