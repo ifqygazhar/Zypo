@@ -17,13 +17,36 @@
 	let lastPlayerHp = $state(100);
 	let hitByEnemy = $state(false);
 
+	const hitSounds = ['/bgm/hit-1-damage.mp3', '/bgm/hit-2-damage.mp3', '/bgm/hit-3-damage.mp3'];
+	const missSound = '/bgm/hit-fail-damage.mp3';
+
+	function playSound(src: string) {
+		const audio = new Audio(src);
+		audio.volume = 0.6;
+		audio.play().catch(() => {});
+	}
+
+	function playRandomHit() {
+		const src = hitSounds[Math.floor(Math.random() * hitSounds.length)];
+		playSound(src);
+	}
+
 	$effect(() => {
 		if (currentPlayer) {
 			if (currentPlayer.hp < lastPlayerHp) {
 				hitByEnemy = true;
+				playRandomHit();
 				setTimeout(() => (hitByEnemy = false), 1000);
 			}
 			lastPlayerHp = currentPlayer.hp;
+		}
+	});
+
+	$effect(() => {
+		if (answerResult === 'HIT') {
+			playRandomHit();
+		} else if (answerResult === 'MISS') {
+			playSound(missSound);
 		}
 	});
 
