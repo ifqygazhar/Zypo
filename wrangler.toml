@@ -1,0 +1,4 @@
+name = "zypo"
+compatibility_date = "2026-01-29"
+
+pages_build_output_dir = ".svelte-kit/cloudflare"
