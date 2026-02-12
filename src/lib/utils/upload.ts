@@ -6,6 +6,11 @@ export async function processAndUploadImage(
 	uploaderName: string
 ): Promise<{ storageId: string; previewUrl: string }> {
 	return new Promise((resolve, reject) => {
+		if (file.size > 2 * 1024 * 1024) {
+			reject(new Error('File size exceeds 2MB limit.'));
+			return;
+		}
+
 		const reader = new FileReader();
 
 		reader.onload = (event) => {
