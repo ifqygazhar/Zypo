@@ -99,6 +99,12 @@
 		}
 	}
 
+	import { audioState } from '$lib/audioState.svelte';
+
+	$effect(() => {
+		audioState.setTrack('/bgm/bgm-lobby.ogg');
+	});
+
 	async function handleQuickMatch() {
 		if (!playerName.trim() || playerPin.length !== 4) {
 			error = 'Enter name & PIN first!';

@@ -7,12 +7,23 @@
 	import Battle from '$lib/component/game/Battle.svelte';
 	import GameOver from '$lib/component/game/GameOver.svelte';
 
+	import { audioState } from '$lib/audioState.svelte';
+
+	// ... (imports)
+
 	const gameCode = page.params.code ?? '';
 
 	let playerId = $state(page.url.searchParams.get('pid') ?? '');
 
 	let isSubmitting = $state(false);
 	let answerResult = $state<'HIT' | 'MISS' | null>(null);
+
+	const gameQuery = createQuery(api.games.getByCode, () => ({ code: gameCode }));
+
+	let game = $derived(gameQuery.data);
+	let questionKey = $derived(game?.currentQuestion?.startTime);
+
+	let battleTrack = $state('');
 
 	onMount(() => {
 		if (!playerId) {
@@ -24,12 +35,16 @@
 		if (gameCode === '') {
 			window.location.href = '/';
 		}
+		// Randomly select battle track on mount
+		battleTrack = Math.random() > 0.5 ? '/bgm/bgm-battle-1.ogg' : '/bgm/bgm-battle-2.ogg';
 	});
 
-	const gameQuery = createQuery(api.games.getByCode, () => ({ code: gameCode }));
-
-	let game = $derived(gameQuery.data);
-	let questionKey = $derived(game?.currentQuestion?.startTime);
+	$effect(() => {
+		if (!game) return;
+		if (game.status === 'waiting') audioState.setTrack('/bgm/bgm-lobby.ogg');
+		else if (game.status === 'playing') audioState.setTrack(battleTrack);
+		else if (game.status === 'finished') audioState.setTrack('/bgm/bgm-end-game.mp3');
+	});
 
 	$effect(() => {
 		questionKey;

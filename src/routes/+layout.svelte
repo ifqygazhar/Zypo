@@ -4,6 +4,7 @@
 	import { PUBLIC_CONVEX_URL } from '$env/static/public';
 
 	import { setupConvex } from 'convex-svelte';
+	import AudioControl from '$lib/component/common/AudioControl.svelte';
 
 	let { children } = $props();
 
@@ -14,4 +15,5 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<AudioControl />
 {@render children()}
