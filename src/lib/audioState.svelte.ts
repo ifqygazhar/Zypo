@@ -3,6 +3,7 @@ class AudioState {
 	volume = $state(0.4);
 	isMuted = $state(false);
 	element = $state<HTMLAudioElement>();
+	activeDucks = 0;
 
 	setTrack(track: string) {
 		if (this.currentTrack !== track) {
@@ -12,7 +13,24 @@ class AudioState {
 
 	setVolume(vol: number) {
 		this.volume = vol;
-		if (this.element) this.element.volume = vol;
+		this.updateElementVolume();
+	}
+
+	private updateElementVolume() {
+		if (this.element) {
+			const multiplier = this.activeDucks > 0 ? 0.2 : 1;
+			this.element.volume = this.volume * multiplier;
+		}
+	}
+
+	duck() {
+		this.activeDucks++;
+		this.updateElementVolume();
+	}
+
+	unduck() {
+		if (this.activeDucks > 0) this.activeDucks--;
+		this.updateElementVolume();
 	}
 
 	toggleMute() {
@@ -22,7 +40,7 @@ class AudioState {
 
 	setElement(el: HTMLAudioElement) {
 		this.element = el;
-		this.element.volume = this.volume;
+		this.updateElementVolume();
 		this.element.muted = this.isMuted;
 	}
 }

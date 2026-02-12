@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { CHARACTERS } from '$lib/gameConfig';
+	import { audioState } from '$lib/audioState.svelte';
 
 	interface Props {
 		game: any;
@@ -21,9 +22,17 @@
 	const missSound = '/bgm/hit-fail-damage.mp3';
 
 	function playSound(src: string) {
+		audioState.duck();
 		const audio = new Audio(src);
-		audio.volume = 0.6;
-		audio.play().catch(() => {});
+		audio.volume = 1.0;
+		audio
+			.play()
+			.then(() => {
+				audio.onended = () => audioState.unduck();
+			})
+			.catch(() => {
+				audioState.unduck();
+			});
 	}
 
 	function playRandomHit() {
