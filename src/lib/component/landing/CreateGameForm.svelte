@@ -166,7 +166,7 @@
 		onchange={handleFileUpload}
 	/>
 
-	<div class="lg:col-span-5 flex flex-col gap-6 h-full">
+	<div class="lg:col-span-5 flex flex-col gap-6">
 		<div class="space-y-5 bg-neutral-900/50 p-5 rounded-2xl border border-neutral-800 shadow-lg">
 			<div>
 				<label
@@ -215,7 +215,7 @@
 			</div>
 		</div>
 
-		<div class="space-y-3 mt-auto">
+		<div class="space-y-3">
 			<button
 				onclick={onQuickMatch}
 				disabled={isCreating || isUploading}
@@ -316,7 +316,7 @@
 						<button
 							class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 {selectedCharacter ===
 							char.id
-								? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-10'
+								? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-0'
 								: 'border-transparent opacity-60 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 							onclick={() => {
 								selectedCharacter = char.id;
@@ -353,7 +353,7 @@
 							<button
 								class="relative aspect-square rounded-xl overflow-hidden border-2 transition-all bg-black/40 group
                                 {selectedCharacter === asset.storageId
-									? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-10'
+									? 'border-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.3)] scale-105 z-0'
 									: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 								onclick={() => {
 									selectedCharacter = asset.storageId;
@@ -548,7 +548,7 @@
 						<button
 							class="relative aspect-video sm:aspect-square rounded-xl overflow-hidden border-2 transition-all {selectedMap ===
 							map
-								? 'border-orange-500 scale-105 shadow-lg z-10'
+								? 'border-orange-500 scale-105 shadow-lg z-0'
 								: 'border-transparent opacity-50 hover:opacity-100 hover:scale-105 hover:border-neutral-600'}"
 							onclick={() => (selectedMap = map)}
 						>
