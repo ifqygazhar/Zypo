@@ -18,6 +18,7 @@ export default defineSchema({
 		currentQuestion: v.optional(
 			v.object({
 				text: v.string(),
+				code: v.optional(v.string()), // Added code field
 				options: v.array(v.string()),
 				correctIndex: v.number(),
 				startTime: v.number()

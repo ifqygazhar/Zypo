@@ -1,15 +1,29 @@
 import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
-// Data for Questions (Hardcoded for prototype)
+// Data for Questions (Including Coding Questions)
 const QUESTIONS = [
 	{ text: 'What is 2 + 2?', options: ['3', '4', '5', '6'], correct: 1 },
+	{
+		text: 'What is the output?',
+		code: 'console.log(typeof []);',
+		options: ["'array'", "'object'", "'null'", "'undefined'"],
+		correct: 1
+	},
+	{
+		text: 'Which method adds to end of array?',
+		code: 'const arr = [1, 2];\narr.???(3);',
+		options: ['push', 'pop', 'shift', 'unshift'],
+		correct: 0
+	},
 	{ text: 'Capital of France?', options: ['London', 'Berlin', 'Paris', 'Rome'], correct: 2 },
-	{ text: 'Fastest animal?', options: ['Cheetah', 'Lion', 'Eagle', 'Falcon'], correct: 3 },
-	{ text: 'Which language is this?', options: ['Java', 'Python', 'TypeScript', 'C++'], correct: 2 },
-	{ text: 'Color of the sky?', options: ['Blue', 'Green', 'Red', 'Yellow'], correct: 0 },
-	{ text: 'Capital of Japan?', options: ['Seoul', 'Beijing', 'Tokyo', 'Bangkok'], correct: 2 },
-	{ text: 'H2O is?', options: ['Gold', 'Silver', 'Water', 'Air'], correct: 2 }
+	{
+		text: 'What does this return?',
+		code: "Boolean('false')",
+		options: ['true', 'false', 'NaN', 'Error'],
+		correct: 0
+	},
+	{ text: 'Fastest animal?', options: ['Cheetah', 'Lion', 'Eagle', 'Falcon'], correct: 3 }
 ];
 
 export const createGame = mutation({
@@ -188,6 +202,7 @@ export const startGame = mutation({
 			status: 'playing',
 			currentQuestion: {
 				text: q.text,
+				code: q.code, // include code if present
 				options: q.options,
 				correctIndex: q.correct,
 				startTime: Date.now()
@@ -275,6 +290,7 @@ export const submitAnswer = mutation({
 					players: newPlayers,
 					currentQuestion: {
 						text: nextQ.text,
+						code: nextQ.code, // include code if present
 						options: nextQ.options,
 						correctIndex: nextQ.correct,
 						startTime: Date.now()

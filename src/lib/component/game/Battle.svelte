@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { CHARACTERS } from '$lib/gameConfig';
-	import { audioState } from '$lib/audioState.svelte';
 
 	interface Props {
 		game: any;
@@ -22,17 +21,9 @@
 	const missSound = '/bgm/hit-fail-damage.mp3';
 
 	function playSound(src: string) {
-		audioState.duck();
 		const audio = new Audio(src);
 		audio.volume = 1.0;
-		audio
-			.play()
-			.then(() => {
-				audio.onended = () => audioState.unduck();
-			})
-			.catch(() => {
-				audioState.unduck();
-			});
+		audio.play().catch(() => {});
 	}
 
 	function playRandomHit() {
@@ -232,7 +223,13 @@
 				>
 					Battle Query:
 				</div>
-				{game.currentQuestion.text}
+				<div class="font-bold mb-1">{game.currentQuestion.text}</div>
+				{#if game.currentQuestion.code}
+					<pre
+						class="bg-black/50 p-2 rounded text-xs md:text-sm font-mono text-green-400 overflow-x-auto border border-neutral-700"><code
+							>{game.currentQuestion.code}</code
+						></pre>
+				{/if}
 			{/if}
 		</div>
 
