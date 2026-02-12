@@ -140,7 +140,9 @@
 		class="fixed top-0 left-0 w-full h-96 bg-linear-to-b from-orange-900/10 to-transparent pointer-events-none"
 	></div>
 
-	<div class="w-full max-w-7xl mb-8 flex flex-col md:flex-row justify-between items-end gap-4 z-10">
+	<div
+		class="w-full max-w-7xl mb-8 flex flex-col md:flex-row justify-between items-center gap-4 z-10"
+	>
 		<div class="space-y-1">
 			<h1
 				class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-linear-to-r from-orange-500 to-red-600 transform -skew-x-12 origin-left drop-shadow-sm"
