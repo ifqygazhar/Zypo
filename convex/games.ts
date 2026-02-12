@@ -31,9 +31,20 @@ export const createGame = mutation({
 		playerName: v.string(),
 		playerId: v.string(),
 		mapId: v.optional(v.string()),
-		characterId: v.string()
+		characterId: v.string(),
+		questions: v.optional(
+			v.array(
+				v.object({
+					text: v.string(),
+					code: v.optional(v.string()),
+					options: v.array(v.string()),
+					correct: v.number()
+				})
+			)
+		)
 	},
 	handler: async (ctx, args) => {
+		console.log('createGame args.questions:', args.questions ? args.questions.length : 'undefined');
 		const user = await ctx.db
 			.query('users')
 			.withIndex('by_username', (q) => q.eq('username', args.playerName))
@@ -49,6 +60,7 @@ export const createGame = mutation({
 			status: 'waiting',
 			publicRank: myRank,
 			publicCountry: myCountry,
+			questions: args.questions, // Save custom questions
 			players: [
 				{
 					id: args.playerId,
@@ -196,7 +208,11 @@ export const startGame = mutation({
 		const game = await ctx.db.get(args.gameId);
 		if (!game) throw new Error('Game not found');
 
-		const q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+		console.log('startGame questions:', game.questions ? game.questions.length : 'undefined');
+
+		// Use custom questions if available, otherwise default
+		const questionSource = game.questions && game.questions.length > 0 ? game.questions : QUESTIONS;
+		const q = questionSource[Math.floor(Math.random() * questionSource.length)];
 
 		await ctx.db.patch(args.gameId, {
 			status: 'playing',
@@ -285,7 +301,9 @@ export const submitAnswer = mutation({
 
 				return 'WIN';
 			} else {
-				const nextQ = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
+				const questionSource =
+					game.questions && game.questions.length > 0 ? game.questions : QUESTIONS;
+				const nextQ = questionSource[Math.floor(Math.random() * questionSource.length)];
 				await ctx.db.patch(args.gameId, {
 					players: newPlayers,
 					currentQuestion: {

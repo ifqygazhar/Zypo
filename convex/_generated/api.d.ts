@@ -10,6 +10,7 @@
 
 import type * as files from "../files.js";
 import type * as games from "../games.js";
+import type * as questions from "../questions.js";
 import type * as users from "../users.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   files: typeof files;
   games: typeof games;
+  questions: typeof questions;
   users: typeof users;
 }>;
 

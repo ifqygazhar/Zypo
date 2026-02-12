@@ -26,7 +26,17 @@ export default defineSchema({
 		),
 		winner: v.optional(v.string()),
 		publicRank: v.optional(v.number()),
-		publicCountry: v.optional(v.string())
+		publicCountry: v.optional(v.string()),
+		questions: v.optional(
+			v.array(
+				v.object({
+					text: v.string(),
+					code: v.optional(v.string()),
+					options: v.array(v.string()),
+					correct: v.number()
+				})
+			)
+		)
 	})
 		.index('by_code', ['code'])
 		.index('by_status', ['status'])
@@ -48,5 +58,28 @@ export default defineSchema({
 		storageId: v.string(),
 		uploaderName: v.string(),
 		createdAt: v.number()
-	}).index('by_createdAt', ['createdAt'])
+	}).index('by_createdAt', ['createdAt']),
+
+	question_sets: defineTable({
+		title: v.string(),
+		author: v.string(),
+		language: v.optional(v.string()), // Added language field
+		description: v.optional(v.string()),
+		questions: v.array(
+			v.object({
+				text: v.string(),
+				code: v.optional(v.string()),
+				options: v.array(v.string()),
+				correct: v.number()
+			})
+		),
+		isPublic: v.boolean(),
+		creatorId: v.optional(v.string()), // user ID from our users table or auth
+		createdAt: v.number()
+	})
+		.searchIndex('search_title_author', {
+			searchField: 'title',
+			filterFields: ['isPublic']
+		})
+		.index('by_author', ['author'])
 });

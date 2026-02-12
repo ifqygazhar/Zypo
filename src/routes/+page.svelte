@@ -16,6 +16,7 @@
 	let error = $state('');
 	let selectedMap = $state(MAPS[0]);
 	let selectedCharacter = $state(CHARACTERS[0].id);
+	let customQuestions = $state<any[] | undefined>(undefined);
 
 	async function registerUser(username: string, pin: string) {
 		let country = 'UN';
@@ -57,11 +58,15 @@
 			sessionStorage.setItem('zypo_playerId', playerId);
 			sessionStorage.setItem('zypo_playerName', playerName);
 
+			console.log('Creating game with questions:', customQuestions);
+
 			const result = await convex.mutation(api.games.createGame, {
 				playerName,
 				playerId,
 				mapId: selectedMap,
-				characterId: selectedCharacter
+				characterId: selectedCharacter,
+				// Ensure no proxies are passed to Convex
+				questions: customQuestions ? JSON.parse(JSON.stringify(customQuestions)) : undefined
 			});
 			goto(`/game/${result.code}?pid=${playerId}`);
 		} catch (err: any) {
@@ -178,6 +183,7 @@
 				bind:playerPin
 				bind:selectedCharacter
 				bind:selectedMap
+				bind:customQuestions
 				{isCreating}
 				onCreate={handleCreate}
 				onQuickMatch={handleQuickMatch}
