@@ -7,5 +7,10 @@ export default defineConfig(({ mode }) => ({
 	esbuild: {
 		pure:
 			mode === 'production' ? ['console.log', 'console.info', 'console.debug', 'console.trace'] : []
+	},
+	server: {
+		fs: {
+			allow: ['convex', '.']
+		}
 	}
 }));

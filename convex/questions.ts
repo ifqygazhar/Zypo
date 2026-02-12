@@ -10,7 +10,7 @@ export const create = mutation({
 		questions: v.array(
 			v.object({
 				text: v.string(),
-				code: v.optional(v.string()),
+				code: v.optional(v.union(v.string(), v.null())),
 				options: v.array(v.string()),
 				correct: v.number()
 			})
