@@ -34,22 +34,19 @@
 		if (gameCode === '') {
 			window.location.href = '/';
 		}
-		// Randomly select battle track on mount
-		battleTrack = Math.random() > 0.5 ? '/bgm/bgm-battle-1.ogg' : '/bgm/bgm-battle-2.ogg';
+		const tracks = ['/bgm/bgm-battle-1.ogg', '/bgm/bgm-battle-2.ogg', '/bgm/bgm-battle-3.ogg'];
+		battleTrack = tracks[Math.floor(Math.random() * tracks.length)];
 	});
 
 	$effect(() => {
 		if (!game) return;
 
-		// Immediate updates for normal states
 		if (game.status === 'waiting' || game.status === 'playing') {
 			statusDelayed = game.status;
-		}
-		// Delay for 'finished' state
-		else if (game.status === 'finished' && statusDelayed !== 'finished') {
+		} else if (game.status === 'finished' && statusDelayed !== 'finished') {
 			setTimeout(() => {
 				statusDelayed = 'finished';
-			}, 3000); // 3 seconds delay for death animation
+			}, 3000);
 		}
 	});
 
@@ -66,7 +63,6 @@
 		isSubmitting = false;
 	});
 
-	// Actions
 	async function startGame() {
 		if (!game) return;
 		await convex.mutation(api.games.startGame, { gameId: game._id });
@@ -86,13 +82,11 @@
 
 			if (result === 'HIT') {
 				answerResult = 'HIT';
-				// Reset visual feedback after short delay
 				setTimeout(() => (answerResult = null), 1000);
 			} else if (result === 'MISS') {
 				answerResult = 'MISS';
 				setTimeout(() => (answerResult = null), 1000);
 			} else if (result === 'WIN') {
-				// Handled by game state update
 			}
 		} catch (e) {
 			console.error(e);

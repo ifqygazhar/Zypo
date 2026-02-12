@@ -25,17 +25,13 @@
 					<div class="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
 						<h3 class="font-bold text-lg mb-2 text-white">Characters</h3>
 						<p class="text-neutral-400 text-sm">
-							Cyberpunk characters generated using <strong class="text-orange-400"
-								>Midjourney v6</strong
-							>
+							Monster sprites from <strong class="text-orange-400">Tuxemon</strong>
 						</p>
 					</div>
 					<div class="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
 						<h3 class="font-bold text-lg mb-2 text-white">Maps</h3>
 						<p class="text-neutral-400 text-sm">
-							Futuristic environments generated using <strong class="text-orange-400"
-								>Midjourney v6</strong
-							>
+							Map assets from <strong class="text-orange-400">Craftpix</strong>
 						</p>
 					</div>
 				</div>
@@ -46,22 +42,50 @@
 				<div class="space-y-4">
 					<div class="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
 						<h3 class="font-bold text-lg mb-1 text-white">Background Music</h3>
-						<p class="text-neutral-400 text-sm mb-2">High-energy Cyberpunk & Synthwave tracks</p>
-						<ul class="list-disc pl-5 text-neutral-500 text-xs space-y-1">
-							<li>Aggressive Darkwave - "Neon Nightmare"</li>
-							<li>Cyberpunk Industrial - "System Failure"</li>
-							<li>Synthwave Chase - "Grid Runner"</li>
+						<ul class="list-disc pl-5 text-neutral-400 text-sm space-y-2">
+							<li>
+								<span class="text-neutral-300">Lobby:</span>
+								<a
+									href="https://www.youtube.com/watch?v=F1TSjJaxMBo"
+									target="_blank"
+									class="text-orange-400 hover:text-orange-300 transition-colors"
+									>Pokemon Red & Blue Jazz</a
+								>
+							</li>
+							<li>
+								<span class="text-neutral-300">Battle 1:</span>
+								<a
+									href="https://youtu.be/cisslWkofMQ"
+									target="_blank"
+									class="text-orange-400 hover:text-orange-300 transition-colors"
+									>Jojo 8bit Version</a
+								>
+							</li>
+							<li>
+								<span class="text-neutral-300">Battle 2:</span>
+								<a
+									href="https://youtu.be/EHoKD1EwXgo"
+									target="_blank"
+									class="text-orange-400 hover:text-orange-300 transition-colors"
+									>Persona 5 Royal 8bit Version</a
+								>
+							</li>
+							<li>
+								<span class="text-neutral-300">Battle 3:</span>
+								<a
+									href="https://youtu.be/a8WVKRfWmw4"
+									target="_blank"
+									class="text-orange-400 hover:text-orange-300 transition-colors"
+									>Persona 5 Royal 8bit Version life will change</a
+								>
+							</li>
 						</ul>
-						<p class="text-xs text-neutral-600 mt-2">
-							Royalty-free licenses obtained from <span class="text-neutral-400">AudioLibrary</span>
-						</p>
 					</div>
 
 					<div class="bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
 						<h3 class="font-bold text-lg mb-1 text-white">SFX</h3>
 						<p class="text-neutral-400 text-sm">
-							UI and Battle sound effects from <strong class="text-orange-400">Mixkit</strong> &
-							<strong class="text-orange-400">Freesound.org</strong>
+							Soundtrack hits from <strong class="text-orange-400">Public Asset Memes</strong>
 						</p>
 					</div>
 				</div>
