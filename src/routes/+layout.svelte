@@ -5,6 +5,7 @@
 
 	import { setupConvex } from 'convex-svelte';
 	import AudioControl from '$lib/component/common/AudioControl.svelte';
+	import NetworkIndicator from '$lib/component/common/NetworkIndicator.svelte';
 
 	import { Toaster } from 'svelte-sonner';
 
@@ -19,4 +20,5 @@
 
 <Toaster position="top-center" richColors closeButton theme="dark" />
 <AudioControl />
+<NetworkIndicator />
 {@render children()}
