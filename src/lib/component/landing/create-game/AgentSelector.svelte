@@ -70,7 +70,7 @@
 	class="lg:col-span-7 bg-neutral-900/50 p-1 rounded-2xl border border-neutral-800 flex flex-col h-125 lg:h-full relative overflow-hidden"
 >
 	<div
-		class="absolute top-0 left-0 w-full p-4 bg-neutral-900/90 backdrop-blur z-10 border-b border-neutral-800 flex justify-between items-center"
+		class="absolute top-0 left-0 w-full p-4 bg-neutral-900/90 backdrop-blur rounded-t-2xl z-10 border-b border-neutral-800 flex justify-between items-center"
 	>
 		<span class="text-xs font-bold uppercase text-neutral-400 flex items-center gap-2">
 			<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Loadout Selection
