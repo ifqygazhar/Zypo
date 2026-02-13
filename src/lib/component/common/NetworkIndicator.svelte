@@ -32,7 +32,7 @@
 </script>
 
 <div
-	class="fixed bottom-4 left-4 z-50 flex items-center gap-2 bg-neutral-900/80 backdrop-blur-md border border-neutral-800 px-3 py-1.5 rounded-full shadow-lg"
+	class="fixed top-4 left-4 z-50 flex items-center gap-2 bg-neutral-900/80 backdrop-blur-md border border-neutral-800 px-3 py-1.5 rounded-full shadow-lg md:bottom-4 md:top-auto"
 >
 	<div class="relative flex h-2 w-2">
 		{#if status === 'good'}
